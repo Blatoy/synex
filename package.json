@@ -3,6 +3,8 @@
     "concurrently": "^7.0.0",
     "eslint": "^8.11.0",
     "http-server": "^14.1.0",
+    "tsc-alias": "^1.6.4",
+    "tsc-watch": "^4.6.2",
     "typescript": "^4.6.2"
   },
   "name": "synex",
@@ -13,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently --kill-others \"tsc --watch\" \"http-server ./dist\""
+    "start": "concurrently \"tsc-watch --preserveWatchOutput--build ./game-lib --preserveWatchOutput\" \"tsc-watch --build ./engine --preserveWatchOutput --onSuccess \\\"tsc-alias -p ./engine/tsconfig.json -r ./tools/game-lib-replacer.js\\\"\" \"tsc-watch --build ./games --preserveWatchOutput --onSuccess \\\"tsc-alias -p ./games/tsconfig.json -r ./tools/game-lib-replacer.js\\\"\" \"http-server ./dist\""
   },
   "repository": {
     "type": "git",
