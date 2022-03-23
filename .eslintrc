@@ -4,6 +4,7 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["tools/game-lib-replacer.js", "dist/generated/**"],
     "rules": {
         "eqeqeq": "error",
         "semi": "error",
