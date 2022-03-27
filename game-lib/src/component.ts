@@ -5,7 +5,7 @@ export class Component {
     static componentName = "";
 
     static deserialize(data: SerializedComponent) {
-        const component = new data.Type;
+        const component = new data.Type();
 
         for (const key in data.valuesOverride) {
             if (key in component) {

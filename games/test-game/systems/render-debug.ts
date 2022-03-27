@@ -7,7 +7,7 @@ import { Transform } from "../components/transform.js";
 export class RenderDebugSystem extends System {
 
     @RequiresComponents(Transform, Debug)
-    renderAll(ctx: CanvasRenderingContext2D, entity: Entity) {
+    renderAll(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, entity: Entity) {
         const position = entity.transform.position;
         const size = entity.transform.size;
 
