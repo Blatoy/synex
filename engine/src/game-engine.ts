@@ -1,23 +1,16 @@
 import { Game } from "./game.js";
 
 export class GameEngine {
-    engineName: string;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    options;
-    targetDiv;
     gameTemplate;
 
-    constructor(engineName: string, targetDiv: HTMLDivElement, game: Game, options = {
+    constructor(public engineName: string, public targetDiv: HTMLDivElement, game: Game, public options = {
         resolution: {
             width: 1920,
             height: 1080
         }
     }) {
-        this.options = options;
-        this.engineName = engineName;
-        this.targetDiv = targetDiv;
-
         this.canvas = document.createElement("canvas");
         this.ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D;
         this.targetDiv.appendChild(this.canvas);
