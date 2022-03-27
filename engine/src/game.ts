@@ -43,7 +43,7 @@ export class Game {
             const entity: Entity = { meta: new GameEntity(entityDefinition.metadata.name) };
 
             entityDefinition.components.forEach((component) => {
-                entity[component.Type.name] = Component.deserialize(component);
+                entity[component.Type.componentName] = Component.deserialize(component);
             });
 
             entities.push(entity);

@@ -1,9 +1,14 @@
+import { Entity } from "game-lib/game-entity.js";
+import { System } from "game-lib/system.js";
 import { Game } from "./game.js";
 
 export class GameEngine {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     gameTemplate;
+
+    systems: System[] = [];
+    entities: Entity[] = [];
 
     constructor(public engineName: string, public targetDiv: HTMLDivElement, game: Game, public options = {
         resolution: {
@@ -42,15 +47,20 @@ export class GameEngine {
 
     start() {
         this.instantiateSystems();
+        this.entities = this.gameTemplate.loadInitialSceneState(this.gameTemplate.getMainScene());
         this.render();
     }
 
     render() {
-        this.ctx.fillStyle = "white";
-        this.ctx.font = "25px monospace";
-        this.ctx.fillText(`${this.engineName} : ${this.canvas.width}x${this.canvas.height}`, 30, 30);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.fillRect(100, 100, 50, 50);
+        this.systems.forEach((system) => {
+            this.entities.forEach((entity) => {
+                system.updateAll?.(entity);
+                system.renderAll?.(this.canvas, this.ctx, entity);
+            });
+            system.update?.(this.entities);
+        });
 
         requestAnimationFrame(this.render.bind(this));
     }
