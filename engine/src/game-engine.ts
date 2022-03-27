@@ -24,8 +24,13 @@ export class GameEngine {
         this.resizeGameCanvas();
     }
 
-    loadGame() {
-        console.log(this.gameTemplate);
+    private instantiateSystems() {
+        this.systems = this.gameTemplate.getSystems().map(system => new system());
+    }
+
+    async reloadSystems() {
+        await this.gameTemplate.load();
+        this.instantiateSystems();
     }
 
     resizeGameCanvas() {
@@ -36,6 +41,7 @@ export class GameEngine {
     }
 
     start() {
+        this.instantiateSystems();
         this.render();
     }
 

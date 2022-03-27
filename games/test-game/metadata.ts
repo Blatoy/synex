@@ -1,11 +1,11 @@
 import { GameEntity } from "game-lib/game-entity.js";
-import { GameDefinition } from "game-lib/metadata.js";
+import { GameDefinition, importGameSystems } from "game-lib/metadata.js";
 import { Debug } from "./components/debug.js";
 import { Transform } from "./components/transform.js";
 import { Velocity } from "./components/velocity.js";
 import main from "./scenes/main.js";
-import { RenderDebugSystem } from "./systems/render-debug.js";
-import { VelocitySystem } from "./systems/velocity.js";
+
+const importSystems = importGameSystems(import.meta.url);
 
 // while I would love for this to be defined directly in the export
 // i did not manage (yet) to extract the type defined here
@@ -18,10 +18,10 @@ const components = {
 };
 
 export const gameDefinition: GameDefinition = {
-    systems: [
-        RenderDebugSystem,
-        VelocitySystem
-    ],
+    systems: await importSystems(
+        "velocity",
+        "render-debug"
+    ),
     components: components,
     scenes: [
         main

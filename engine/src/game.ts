@@ -9,7 +9,7 @@ export class Game {
     constructor(private basePath: string) { }
 
     async load() {
-        this.definition = (await import(`${this.basePath}/metadata.js`)).gameDefinition as GameDefinition;
+        this.definition = (await import(`${this.basePath}/metadata.js?r=${Math.random()}&basePath=${this.basePath}`)).gameDefinition as GameDefinition;
         this.assignNameToComponents();
     }
 
@@ -30,6 +30,10 @@ export class Game {
 
     getMainScene() {
         return this.definition.scenes[0];
+    }
+
+    getSystems() {
+        return this.definition.systems;
     }
 
     loadInitialSceneState(scene: Scene) {
