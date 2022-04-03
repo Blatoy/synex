@@ -6,11 +6,27 @@ const viewPath = "./views";
 const distFolder = "./dist";
 const generatedPath = path.join(distFolder, "views");
 
+let done = true;
 async function copyStaticFiles() {
-    try { await fsPromise.mkdir(distFolder); } catch (e) { }
-    try { await fsPromise.rm(generatedPath, { recursive: true });  } catch (e) { }
+    if (!done) return;
 
-    await fsPromise.mkdir(generatedPath);
+    done = false;
+    try {
+        await fsPromise.mkdir(distFolder);
+    } catch (e) {
+        console.warn("Could not create dir", distFolder);
+    }
+    try {
+        await fsPromise.rm(generatedPath, { recursive: true });
+    } catch (e) {
+        console.warn("Could not remove dir", generatedPath);
+    }
+    
+    try {
+        await fsPromise.mkdir(generatedPath);
+     } catch (e) {
+        console.warn("Could not create dir", generatedPath);
+    }
 
     const files = await fsPromise.readdir(viewPath);
 
@@ -24,15 +40,15 @@ async function copyStaticFiles() {
             await fsPromise.cp(path.join(inPath, "static"), outPath, { recursive: true });
         }
     }
+    done = true;
 }
 
 copyStaticFiles();
 
-let done = true;
 fs.watch(viewPath, { recursive: true }, async () => {
     if (done) {
-        done = false;
+
         await copyStaticFiles();
-        done = true;
+
     }
 });
