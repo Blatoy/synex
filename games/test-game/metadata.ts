@@ -1,11 +1,14 @@
-import { GameEntity } from "game-lib/game-entity.js";
-import { GameDefinition, importGameSystems } from "game-lib/metadata.js";
+import main from "./scenes/main.js";
+import { SystemManager } from "game-lib/utils/system-manager.js";
+import { GenericEntity } from "game-lib/types/entity.js";
+import { GameMetadata } from "game-lib/types/game-metadata.js";
 import { Debug } from "./components/debug.js";
 import { Transform } from "./components/transform.js";
 import { Velocity } from "./components/velocity.js";
-import main from "./scenes/main.js";
+import { Force } from "./components/force.js";
+import { Bounce } from "./components/bounce.js";
 
-const importSystems = importGameSystems(import.meta.url);
+const importSystems = SystemManager.createImporter(import.meta.url);
 
 // while I would love for this to be defined directly in the export
 // i did not manage (yet) to extract the type defined here
@@ -14,13 +17,17 @@ const importSystems = importGameSystems(import.meta.url);
 const components = {
     transform: Transform,
     velocity: Velocity,
-    debug: Debug
+    force: Force,
+    debug: Debug,
+    bounce: Bounce
 };
 
-export const gameDefinition: GameDefinition = {
+export const gameDefinition: GameMetadata = {
     systems: await importSystems(
         "velocity",
-        "render-debug"
+        "render-debug",
+        "force",
+        "bounce"
     ),
     components: components,
     scenes: [
@@ -30,4 +37,4 @@ export const gameDefinition: GameDefinition = {
 };
 
 // Allows accessing components and getting autocompletion in systems
-export type Entity = { meta: GameEntity } & { [K in keyof typeof components]: InstanceType<typeof components[K]> };
+export type Entity = GenericEntity & { [K in keyof typeof components]: InstanceType<typeof components[K]> };

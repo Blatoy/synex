@@ -1,12 +1,10 @@
-import { RequiresComponents } from "game-lib/component.js";
-import { System } from "game-lib/system.js";
+import { System } from "game-lib/types/system.js";
 import { Entity } from "test-game/metadata.js";
 import { Debug } from "../components/debug.js";
 import { Transform } from "../components/transform.js";
 
-export class RenderDebugSystem extends System {
-
-    @RequiresComponents(Transform, Debug)
+export const RenderDebugSystem: System = {
+    requiredComponents: [Transform, Debug],
     renderAll(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, entity: Entity) {
         const position = entity.transform.position;
         const size = entity.transform.size;
@@ -22,8 +20,8 @@ export class RenderDebugSystem extends System {
         }
 
         if (entity.debug.showName) {
-            ctx.fillStyle = entity.debug.fillColor.toString();
+            ctx.fillStyle = `#${entity.debug.fillColor.toHex()}`;
             ctx.fillText(entity.meta.name, position.x + size.x / 2, position.y - 10);
         }
     }
-}
+};

@@ -1,4 +1,4 @@
-import { Component } from "game-lib/component.js";
+import { Component } from "game-lib/types/component.js";
 import { Color } from "game-lib/utils/color.js";
 
 export class Debug extends Component {

@@ -1,4 +1,4 @@
-import { Component } from "game-lib/component.js";
+import { Component } from "game-lib/types/component.js";
 import { Vector2 } from "game-lib/utils/vector2.js";
 
 export class Transform extends Component {
