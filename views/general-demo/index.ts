@@ -16,11 +16,9 @@ window.addEventListener("load", async () => {
     });
 });
 
-document.addEventListener("keydown", async (e) => {
-    if (e.key === "r") {
-        await gameTemplate.reload();
-        engines.forEach((engine) => {
-            engine.reloadGameTemplate();
-        });
-    }
+window.addEventListener("focus", async () => {
+    await gameTemplate.reload();
+    engines.forEach((engine) => {
+        engine.reloadGameTemplate();
+    });
 });
