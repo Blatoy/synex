@@ -89,7 +89,7 @@ export class Engine {
 
         this.gameCanvas.ctx.fillStyle = "white";
         this.gameCanvas.ctx.font = "32px monospace";
-        this.gameCanvas.ctx.fillText("tick: " + this.debug.lastTickTime.toFixed(2) + "ms => " + Math.floor(((1000 / 60) / (this.debug.lastTickTime))) + " catch-up frames", 10, 30);
+        this.gameCanvas.ctx.fillText("tick: " + this.debug.lastTickTime.toFixed(2) + "ms", 10, 30);
         this.gameCanvas.ctx.fillText("rend: " + this.debug.lastRenderTime.toFixed(2) + "ms", 10, 60);
 
         requestAnimationFrame(this.renderLoop.bind(this));

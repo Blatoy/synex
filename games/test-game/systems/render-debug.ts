@@ -19,6 +19,8 @@ export const RenderDebugSystem: System = {
             ctx.strokeRect(position.x, position.y, size.x, size.y);
         }
 
+        // Using render instead of renderAll and separating fillRect, strokeRect and fillText into their own loop
+        // improves performance a great deal and could be done if
         if (entity.debug.showName) {
             ctx.fillStyle = `#${entity.debug.fillColor.toHex()}`;
             ctx.fillText(entity.meta.name, position.x + size.x / 2, position.y - 10);

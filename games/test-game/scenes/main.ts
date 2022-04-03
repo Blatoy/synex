@@ -13,7 +13,7 @@ const main: Scene = {
     ]
 };
 
-for (let i = 0; i < 5000; i++) {
+for (let i = 0; i < 500; i++) {
     const x = i % 32;
     const y = i / 32;
 
@@ -72,18 +72,24 @@ for (let i = 0; i < 5000; i++) {
                 },
                 {
                     Type: Bounce,
-                    valuesOverride: {}
+                    valuesOverride: {
+                        bounciness: 0.99
+                    }
                 },
                 {
                     Type: Force,
                     valuesOverride: {
-                        acceleration: { y: 1 }
+                        acceleration: { y: 0.05 }
                     }
                 },
                 {
                     Type: Debug,
                     valuesOverride: {
                         fillColor: {
+                            b: 255,
+                            r: 0
+                        },
+                        strokeColor: {
                             b: 255,
                             r: 0
                         },
