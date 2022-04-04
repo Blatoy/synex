@@ -3,6 +3,8 @@
     "concurrently": "^7.0.0",
     "eslint": "^8.11.0",
     "http-server": "^14.1.0",
+    "tsc-alias": "^1.6.4",
+    "tsc-watch": "^4.6.2",
     "typescript": "^4.6.2"
   },
   "name": "synex",
@@ -13,7 +15,13 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently --kill-others \"tsc --watch\" \"http-server ./dist\""
+    "start": "concurrently \"npm:watch:game-lib\" \"npm:watch:engine\" \"npm:watch:games\" \"npm:watch:views\" \"npm:watch:static-copy\"  \"npm:serve\"",
+    "watch:game-lib": "tsc-watch --build ./game-lib --preserveWatchOutput",
+    "watch:engine": "tsc-watch --build ./engine --preserveWatchOutput --onSuccess \"tsc-alias -p ./engine/tsconfig.json -r ./tools/game-lib-replacer.js\"",
+    "watch:games": "tsc-watch --build ./games --preserveWatchOutput --onSuccess \"tsc-alias -p ./games/tsconfig.json -r ./tools/game-lib-replacer.js\"",
+    "watch:views": "tsc-watch --build ./views --preserveWatchOutput --onSuccess \"tsc-alias -p ./views/tsconfig.json -r ./tools/engine-replacer.js\"",
+    "watch:static-copy": "node ./tools/views-copy-static.js",
+    "serve": "http-server ./dist"
   },
   "repository": {
     "type": "git",

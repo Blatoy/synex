@@ -4,6 +4,7 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["tools/*.js", "dist/scripts/**"],
     "rules": {
         "eqeqeq": "error",
         "semi": "error",
@@ -13,7 +14,6 @@
         "space-infix-ops": "error",
         "no-multi-spaces": "error",
         "no-var": "error",
-        "no-unused-vars": "warn",
         "keyword-spacing": "error",
         "comma-spacing": "error",
         "no-implicit-coercion": "error",
