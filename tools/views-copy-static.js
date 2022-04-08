@@ -1,5 +1,6 @@
 const fs = require("fs");
 const fsPromise = fs.promises;
+const chokidar = require("chokidar");
 const path = require("path");
 
 const viewPath = "./views";
@@ -45,10 +46,8 @@ async function copyStaticFiles() {
 
 copyStaticFiles();
 
-fs.watch(viewPath, { recursive: true }, async () => {
+chokidar.watch(viewPath, { recursive: true }, async () => {
     if (done) {
-
         await copyStaticFiles();
-
     }
 });
