@@ -33,9 +33,9 @@ export class SystemManager {
      */
     public static getAffectedEntities(system: System, entities: GenericEntity[]) {
         // very very basic caching that needs to be invalidated manually
-        if (SystemManager.affectedEntitiesCache[system.requiredComponents.toString()]) {
+        /*if (SystemManager.affectedEntitiesCache[system.requiredComponents.toString()]) {
             return SystemManager.affectedEntitiesCache[system.requiredComponents.toString()];
-        }
+        }*/
         const requiredComponentsArray: typeof Component[] = [];
         const matchingEntityGroups: GenericEntity[][] = [];
 
@@ -57,7 +57,7 @@ export class SystemManager {
         }
 
         const filteredEntityGroups = matchingEntityGroups.filter(groups => groups.length > 0);
-        SystemManager.affectedEntitiesCache[system.requiredComponents.toString()] = filteredEntityGroups;
+        // SystemManager.affectedEntitiesCache[system.requiredComponents.toString()] = filteredEntityGroups;
         return filteredEntityGroups;
     }
 }
