@@ -14,6 +14,14 @@ export class MetaEntity implements MetaEntityInterface {
         return components.every(component => this.components.includes(component));
     }
 
+    // Used when saving frame states, should probably be optimized or done in a better way?
+    toJSON() {
+        return {
+            name: this.name,
+            components: this.components.map(component => component.componentName)
+        };
+    }
+
     get components() {
         return this._components;
     }

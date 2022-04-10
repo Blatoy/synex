@@ -10,6 +10,17 @@ export type GenericEntity = {
 
 export type MetaEntity = {
     name: string
+    components: typeof Component[] // TODO: Should this be here?
     delete: () => void
-    hasComponents: (components: typeof Component[]) => boolean
+    hasComponents: (components: typeof Component[]) => boolean // TODO: Should this be here?
 }
+
+export type SerializedEntity = {
+    meta: {
+        name: string,
+        components: string[]
+    }
+    [key: string]: {
+        [key: string]: unknown
+    }
+};
