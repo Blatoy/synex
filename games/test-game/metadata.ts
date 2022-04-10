@@ -7,6 +7,7 @@ import { Transform } from "./components/transform.js";
 import { Velocity } from "./components/velocity.js";
 import { Force } from "./components/force.js";
 import { Bounce } from "./components/bounce.js";
+import { Key } from "game-lib/utils/keycode.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -33,6 +34,23 @@ export const gameDefinition: GameMetadata = {
     scenes: [
         main
     ],
+    actions: {
+        "default": {
+            "up": {keys: [Key.W, Key.UpArrow] },
+            "down": {keys: [Key.S, Key.DownArrow]},
+            "left": {keys: [Key.A, Key.LeftArrow]},
+            "right": {keys: [Key.D, Key.RightArrow]},
+            "open_menu": {keys: [Key.Escape], synchronized: false },
+        },
+        "menu": {
+            "close_menu": {keys: [Key.Escape], synchronized: false },
+            "up": {keys: [Key.W, Key.UpArrow], synchronized: false },
+            "down": {keys: [Key.S, Key.DownArrow], synchronized: false},
+            "left": {keys: [Key.A, Key.LeftArrow], synchronized: false},
+            "right": {keys: [Key.D, Key.RightArrow], synchronized: false}
+    
+        }
+    },
     version: "1.0.0"
 };
 
