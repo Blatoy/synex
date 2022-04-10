@@ -13,6 +13,55 @@ const main: Scene = {
     ]
 };
 
+main.entities.push({
+    metadata: {
+        name: "Yellow Entity"
+    },
+    components: [
+        {
+            Type: Transform,
+            valuesOverride: {
+                position: { x: 1920 / 2, y: 1080 / 2 }
+            }
+        },
+        {
+            Type: Velocity,
+            valuesOverride: {
+                linear: { x: Math.random() - 0.5, y: Math.random() - 0.5 }
+            }
+        },
+        {
+            Type: Bounce,
+            valuesOverride: {
+                bounciness: 0.99
+            }
+        },
+        {
+            Type: Force,
+            valuesOverride: {
+                acceleration: { y: 0.05 }
+            }
+        },
+        {
+            Type: Debug,
+            valuesOverride: {
+                fillColor: {
+                    b: 0,
+                    r: 255,
+                    g: 255
+                },
+                strokeColor: {
+                    b: 0,
+                    r: 255,
+                    g: 255
+                },
+                fillRect: true,
+                showName: true
+            }
+        }
+    ]
+});
+
 for (let i = 0; i < 500; i++) {
     const x = i % 32;
     const y = i / 32;

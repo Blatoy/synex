@@ -23,7 +23,9 @@ export const RenderDebugSystem: System = {
         // improves performance a great deal and could be done if
         if (entity.debug.showName) {
             ctx.fillStyle = `#${entity.debug.fillColor.toHex()}`;
+            ctx.textAlign = "center";
             ctx.fillText(entity.meta.name, position.x + size.x / 2, position.y - 10);
+            ctx.textAlign = "left";
         }
     }
 };
