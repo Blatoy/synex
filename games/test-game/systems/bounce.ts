@@ -6,7 +6,7 @@ import { Velocity } from "../components/velocity.js";
 
 export const BounceSystem: System = {
     requiredComponents: [Transform, Bounce, Velocity],
-    updateAll: (entity: Entity) => {
+    updateAll (entity: Entity) {
         if (entity.transform.position.x + entity.transform.size.x + entity.velocity.linear.x > 1920) {
             entity.velocity.linear.x *= -entity.bounce.bounciness;
             entity.transform.position.x = 1920 - entity.transform.size.x;

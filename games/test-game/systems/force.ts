@@ -6,7 +6,7 @@ import { Velocity } from "../components/velocity.js";
 
 export const ForceSystem: System = {
     requiredComponents: [Force, Velocity],
-    updateAll: (entity: Entity) => {
+    updateAll (entity: Entity) {
         entity.velocity.linear.x += entity.force.acceleration.x;
         entity.velocity.linear.y += entity.force.acceleration.y;
     }
