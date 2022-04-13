@@ -1,17 +1,30 @@
 import { GenericEntity, SerializedEntity } from "game-lib/types/entity.js";
+import { Action } from "game-lib/types/game-api/action.js";
 import { GameTemplate } from "game-template.js";
 import { MetaEntity } from "meta-entity.js";
 
 export type SerializedState = {
-    frameIndex: number,
+    frameIndex: number
+    actionContext: string
+    actions: Action[]
     entities: SerializedEntity[]
 }
 
 export class State {
-    constructor(public entities: GenericEntity[] = [], public frameIndex: number = 0) { }
+    constructor(
+        public entities: GenericEntity[] = [],
+        public actions: Action[] = [],
+        public actionContext = "default",
+        public frameIndex: number = 0
+    ) { }
 
     serialize() {
-        return JSON.stringify({entities: this.entities, frameIndex: this.frameIndex});
+        return JSON.stringify({
+            entities: this.entities,
+            frameIndex: this.frameIndex,
+            actions: this.actions,
+            actionContext: this.actionContext
+        });
     }
 
     // TODO: While not half asleep, use a reviver maybe?
@@ -19,7 +32,7 @@ export class State {
         const entities: GenericEntity[] = [];
         const deserialized: SerializedState = JSON.parse(state);
         const savedEntities: SerializedEntity[] = deserialized.entities; // TODO: Correct typing
-        
+
         savedEntities.forEach((savedEntity) => {
             // Create entity
             const entity: GenericEntity = {
@@ -45,6 +58,6 @@ export class State {
             entities.push(entity);
         });
 
-        return new State(entities, deserialized.frameIndex);
+        return new State(entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
     }
 }

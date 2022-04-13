@@ -14,12 +14,13 @@ export type GameMetadata = {
     actions: ActionContexts
 }
 
-type ActionContexts = {
+export type ActionContexts = {
     "default": {[key: string]: ActionDefinition},
     [key: string]: {[key: string]: ActionDefinition}
 }
 
-type ActionDefinition = {
+export type ActionDefinition = {
     keys: Key[],
     synchronized?: boolean
+    fireOnce?: boolean
 }

@@ -58,10 +58,8 @@ export class EngineDebugger {
         ctx.fillStyle = "white";
         ctx.font = "32px monospace";
         ctx.fillText("= " + this.engine.name + " =", 10, debugYPos += 30);
-        ctx.fillText("frame: " + state.frameIndex, 10, debugYPos += 30);
-        ctx.fillText("tick: " + this.lastTickTime.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("rend: " + this.lastRenderTime.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("lag : " + this.engine.updateLag.toFixed(2) + "ms " + (this.engine.updateLag > this.engine.msPerFrame ? " (can't keep up!)" : ""), 10, debugYPos += 30);
+        ctx.fillText("ctx  : " + this.engine.currentState.actionContext, 10, debugYPos += 30);
+        ctx.fillText("acts : " + this.engine.currentState.actions.map(a => `${a.ownerId}:${a.type}`).join(", "), 10, debugYPos += 30);
         ctx.restore();
     }
 }

@@ -1,4 +1,4 @@
-import { Actions } from "./action.js";
+import { Actions } from "./game-api/action.js";
 import { Component } from "./component.js";
 import { GenericEntity } from "./entity.js";
 

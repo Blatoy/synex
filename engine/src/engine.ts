@@ -1,9 +1,11 @@
 import { State } from "./frame-state.js";
 import { GameCanvas } from "game-canvas.js";
 import { SystemManager } from "game-lib/utils/system-manager.js";
-import { System } from "game-lib/types/system.js";
+import { System, SystemContext } from "game-lib/types/system.js";
 import { GameTemplate } from "game-template.js";
 import { EngineDebugger } from "engine-debug.js";
+import { ActionsAPI } from "game-api/actions-api.js";
+import { EngineInput } from "engine-input.js";
 
 
 export class Engine {
@@ -17,10 +19,13 @@ export class Engine {
     previousUpdateTime = performance.now();
     updateLag = 0;
     debugger: EngineDebugger;
+    inputs: EngineInput;
+
 
     constructor(public name: string, private gameTemplate: GameTemplate, canvasContainer: HTMLElement) {
         this.gameCanvas = new GameCanvas(canvasContainer);
         this.debugger = new EngineDebugger(this);
+        this.inputs = new EngineInput();
         this.reloadGameTemplate();
     }
 
@@ -60,12 +65,12 @@ export class Engine {
             if (system.updateAll) {
                 for (const entities of matchingEntityGroups) {
                     for (const entity of entities) {
-                        system.updateAll(entity);
+                        system.updateAll.call(this.getAPIForState(state), entity);
                     }
                 }
             }
 
-            system.update?.(...matchingEntityGroups);
+            system.update?.call(this.getAPIForState(state), ...matchingEntityGroups);
         }
 
         this.debugger.onTickEnd();
@@ -85,22 +90,58 @@ export class Engine {
             if (system.renderAll) {
                 for (const entities of matchingEntityGroups) {
                     for (const entity of entities) {
-                        system.renderAll(this.gameCanvas.canvas, this.gameCanvas.ctx, entity);
+                        system.renderAll.call(this.getAPIForState(state), this.gameCanvas.canvas, this.gameCanvas.ctx, entity);
                     }
                 }
             }
 
-            system.render?.(this.gameCanvas.canvas, this.gameCanvas.ctx, ...matchingEntityGroups);
+            system.render?.call(this.getAPIForState(state), this.gameCanvas.canvas, this.gameCanvas.ctx, ...matchingEntityGroups);
         }
 
         this.debugger.onRenderEnd();
     }
 
+    getAPIForState(state: State): SystemContext {
+        // TODO: This should probably really be optimized as it's discarded after every usage!
+        return {
+            actions: new ActionsAPI(state)
+        };
+    }
 
+    setActionsFromInputs() {
+        const actions = this.gameTemplate.gameMetadata.actions[this.currentState.actionContext];
+        const clearKeys = [];
+
+        this.currentState.actions = [];
+
+        if (actions) {
+            for (const actionType in actions) {
+                const action = actions[actionType];
+                const performingAction = action.keys.some(key => this.inputs.isHeld(key));
+                if (performingAction) {
+                    if (action.fireOnce) {
+                        clearKeys.push(...action.keys);
+                    }
+
+                    this.currentState.actions.push({
+                        ownerId: -1,
+                        type: actionType
+                    });
+                }
+            }
+
+            for (const key of clearKeys) {
+                this.inputs.clearHeld(key);
+            }
+        } else {
+            console.warn("Invalid action state: ", this.currentState.actionContext);
+        }
+    }
+    // Based on https://gameprogrammingpatterns.com/game-loop.html
+    // Based on https://gameprogrammingpatterns.com/game-loop.html
     gameLoop() {
         this.debugger.onGameLoopStart();
 
-        // Based on https://gameprogrammingpatterns.com/game-loop.html
         const currentTime = performance.now();
         const elapsedTime = currentTime - this.previousUpdateTime;
         this.previousUpdateTime = currentTime;
@@ -109,12 +150,12 @@ export class Engine {
         let updateCount = 0;
         while (this.updateLag >= this.msPerFrame && updateCount < this.maxCatchupFrames) {
             updateCount++;
+            this.setActionsFromInputs();
             this.tick(this.currentState);
             this.updateLag -= this.msPerFrame;
         }
 
         this.render(this.currentState);
-
         this.debugger.renderDebug(this.gameCanvas.ctx, this.currentState);
 
         requestAnimationFrame(this.gameLoop.bind(this));
