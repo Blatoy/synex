@@ -24,6 +24,7 @@ export class Engine {
     debugger: EngineDebugger;
     inputs: EngineInput;
 
+    replayIndex = -1;
 
     constructor(public name: string, private gameTemplate: GameTemplate, canvasContainer: HTMLElement) {
         this.gameCanvas = new GameCanvas(canvasContainer);
@@ -149,6 +150,22 @@ export class Engine {
         }
     }
 
+    setActionsFromReplay() {
+        if (this.replayIndex >= this.stateBuffer.length) {
+            this.replayIndex = -1;
+            return;
+        }
+
+        const savedState = this.stateBuffer[this.replayIndex++];
+        if (savedState.entities.length > 0) {
+            this.currentState = savedState.clone(this.gameTemplate);
+        } else {
+            this.currentState.actions = savedState.actions;
+            this.currentState.actionContext = savedState.actionContext;
+            this.currentState.frameIndex = savedState.frameIndex;
+        }
+    }
+
     // Based on https://gameprogrammingpatterns.com/game-loop.html
     gameLoop() {
         this.debugger.onGameLoopStart();
@@ -161,8 +178,14 @@ export class Engine {
         let updateCount = 0;
         while (this.updateLag >= this.msPerFrame && updateCount < this.maxCatchupFrames) {
             updateCount++;
-            this.setActionsFromInputs();
-            this.saveStateToBuffer();
+
+            if (this.replayIndex === -1) {
+                this.setActionsFromInputs();
+                this.saveStateToBuffer();
+            } else {
+                this.setActionsFromReplay();
+            }
+
             this.tick(this.currentState);
             this.updateLag -= this.msPerFrame;
         }
