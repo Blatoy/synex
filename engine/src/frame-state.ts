@@ -18,6 +18,18 @@ export class State {
         public frameIndex: number = 0
     ) { }
 
+    clone(gameTemplate: GameTemplate) {
+        return State.deserialize(this.serialize(), gameTemplate);
+    }
+
+    lightClone() {
+        // using new every frame may be an issue?
+        // also the name of this function sucks
+        return new State([], this.actions.map(action => {
+            return { ...action };
+        }), this.actionContext, this.frameIndex);
+    }
+
     serialize() {
         return JSON.stringify({
             entities: this.entities,

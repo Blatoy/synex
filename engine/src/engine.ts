@@ -9,13 +9,16 @@ import { EngineInput } from "engine-input.js";
 
 
 export class Engine {
+    // TODO: Move into multiline constructor
     systems: System[] = [];
     currentState: State = new State();
+    stateBuffer: State[] = [];
     gameCanvas;
 
     readonly targetUPS = 60; // TODO: Let the game set that
     readonly msPerFrame = 1000 / this.targetUPS;
     readonly maxCatchupFrames = 100;
+    readonly fullSaveStateFrameCount = 60;
     previousUpdateTime = performance.now();
     updateLag = 0;
     debugger: EngineDebugger;
@@ -137,7 +140,15 @@ export class Engine {
             console.warn("Invalid action state: ", this.currentState.actionContext);
         }
     }
-    // Based on https://gameprogrammingpatterns.com/game-loop.html
+
+    saveStateToBuffer() {
+        if (this.currentState.frameIndex % this.fullSaveStateFrameCount === 0) {
+            this.stateBuffer.push(this.currentState.clone(this.gameTemplate));
+        } else {
+            this.stateBuffer.push(this.currentState.lightClone());
+        }
+    }
+
     // Based on https://gameprogrammingpatterns.com/game-loop.html
     gameLoop() {
         this.debugger.onGameLoopStart();
@@ -151,6 +162,7 @@ export class Engine {
         while (this.updateLag >= this.msPerFrame && updateCount < this.maxCatchupFrames) {
             updateCount++;
             this.setActionsFromInputs();
+            this.saveStateToBuffer();
             this.tick(this.currentState);
             this.updateLag -= this.msPerFrame;
         }
