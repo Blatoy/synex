@@ -7,6 +7,9 @@ import { Transform } from "./components/transform.js";
 import { Velocity } from "./components/velocity.js";
 import { Force } from "./components/force.js";
 import { Bounce } from "./components/bounce.js";
+import { Key } from "game-lib/utils/keycode.js";
+import { Owner } from "./components/owner.js";
+import { Menu } from "./components/menu.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -19,7 +22,9 @@ const components = {
     velocity: Velocity,
     force: Force,
     debug: Debug,
-    bounce: Bounce
+    bounce: Bounce,
+    owner: Owner,
+    menu: Menu
 };
 
 export const gameDefinition: GameMetadata = {
@@ -27,12 +32,29 @@ export const gameDefinition: GameMetadata = {
         "velocity",
         "render-debug",
         "force",
-        "bounce"
+        "bounce",
+        "move",
+        "menu"
     ),
     components: components,
     scenes: [
         main
     ],
+    actions: {
+        "default": {
+            "move_up": { keys: [Key.W, Key.ArrowUp] },
+            "move_down": { keys: [Key.S, Key.ArrowDown] },
+            "move_left": { keys: [Key.A, Key.ArrowLeft] },
+            "move_right": { keys: [Key.D, Key.ArrowRight] },
+            "open_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
+        },
+        "menu": {
+            "close_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
+            "enter": { keys: [Key.Enter, Key.Space], synchronized: false, fireOnce: true },
+            "left": { keys: [Key.A, Key.ArrowLeft, Key.W, Key.ArrowUp], synchronized: false, fireOnce: true },
+            "right": { keys: [Key.D, Key.ArrowRight, Key.S, Key.ArrowDown], synchronized: false, fireOnce: true }
+        }
+    },
     version: "1.0.0"
 };
 

@@ -1,3 +1,4 @@
+import { Actions } from "./game-api/action.js";
 import { Component } from "./component.js";
 import { GenericEntity } from "./entity.js";
 
@@ -7,8 +8,12 @@ import { GenericEntity } from "./entity.js";
 export type System = {
     requiredComponents: typeof Component[] | typeof Component[][];
 
-    updateAll?(entity: GenericEntity): void;
-    update?(...entity: GenericEntity[][]): void;
-    renderAll?(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, entity: GenericEntity): void;
-    render?(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, ...entity: GenericEntity[][]): void;
+    updateAll?(this: SystemContext, entity: GenericEntity): void;
+    update?(this: SystemContext, ...entity: GenericEntity[][]): void;
+    renderAll?(this: SystemContext, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, entity: GenericEntity): void;
+    render?(this: SystemContext, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, ...entity: GenericEntity[][]): void;
+}
+
+export type SystemContext = {
+    actions: Actions
 }
