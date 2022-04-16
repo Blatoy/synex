@@ -129,7 +129,8 @@ export class Engine {
 
                     this.currentState.actions.push({
                         ownerId: -1,
-                        type: actionType
+                        type: actionType,
+                        context: this.currentState.actionContext
                     });
                 }
             }

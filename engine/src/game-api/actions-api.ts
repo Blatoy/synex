@@ -8,14 +8,19 @@ export class ActionsAPI implements Actions {
         const actions: { [key: string]: Action; } = {};
         for (const action of this.state.actions) {
             if (action.ownerId === ownerId) {
-                actions[`${this.state.actionContext}:${action.type}`] = action;
+                actions[`${action.context}:${action.type}`] = action;
             }
         }
         return actions;
     }
 
-    byType(type: string): Action[] {
-        return this.state.actions.filter(action => action.type === type);
+    /**
+     * @param context 
+     * @param type 
+     * @returns List of actions for specified context and frame
+     */
+    byType(context: string, type: string): Action[] {
+        return this.state.actions.filter(action => (action.type === type && action.context === context));
     }
 
     setContext(context: string): void {
