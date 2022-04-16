@@ -4,7 +4,7 @@ import { Menu } from "test-game/components/menu.js";
 import { Owner } from "test-game/components/owner.js";
 import { Entity } from "test-game/metadata.js";
 
-export const MoveSystem: System = {
+export const MenuSystem: System = {
     requiredComponents: [Menu, Owner],
     updateAll(entity: Entity) {
         const playerActions = this.actions.ofPlayer(entity.owner.id);

@@ -6,57 +6,78 @@ import { GameTemplate } from "game-template.js";
 import { EngineDebugger } from "engine-debug.js";
 import { ActionsAPI } from "game-api/actions-api.js";
 import { EngineInput } from "engine-input.js";
+import { Rollback } from "rollback.js";
 
 
 export class Engine {
-    // TODO: Move into multiline constructor
-    systems: System[] = [];
-    currentState: State = new State();
-    stateBuffer: State[] = [];
-    gameCanvas;
+    readonly TARGET_UPS = 60;
+    readonly MS_PER_FRAME = 1000 / this.TARGET_UPS;
+    readonly MAX_CATCHUP_FRAMES = 100;
 
-    readonly targetUPS = 60; // TODO: Let the game set that
-    readonly msPerFrame = 1000 / this.targetUPS;
-    readonly maxCatchupFrames = 100;
-    readonly fullSaveStateFrameCount = 60;
+    currentState: State = new State(this.gameTemplate);
+    systems: System[] = [];
+
     previousUpdateTime = performance.now();
     updateLag = 0;
+
     debugger: EngineDebugger;
     inputs: EngineInput;
+    rollback: Rollback;
+    actionsAPI: ActionsAPI;
 
-    replayIndex = -1;
+    gameCanvas;
 
-    constructor(public name: string, private gameTemplate: GameTemplate, canvasContainer: HTMLElement) {
+    constructor(
+        public name: string,
+        private gameTemplate: GameTemplate,
+        canvasContainer: HTMLElement
+    ) {
         this.gameCanvas = new GameCanvas(canvasContainer);
         this.debugger = new EngineDebugger(this);
         this.inputs = new EngineInput();
+        this.rollback = new Rollback();
         this.actionsAPI = new ActionsAPI(this.currentState);
         this.reloadGameTemplate();
     }
 
+    /**
+     * Reload systems from network
+     */
     public reloadGameTemplate() {
-        // TODO: Synchronize reloading game in multiplayer?
         this.systems = this.gameTemplate.systems.slice();
     }
 
+    /**
+     * Start game logic
+     */
     start() {
-        this.currentState = new State(this.gameTemplate.loadScene(this.gameTemplate.mainScene));
+        this.currentState = new State(this.gameTemplate, this.gameTemplate.loadScene(this.gameTemplate.mainScene));
         this.gameLoop();
     }
 
+    /**
+     * Export current game state to text
+     * @returns serialized state
+     */
     saveState() {
         return this.currentState.serialize();
     }
 
+    /**
+     * Load current game state
+     * @param state saved state
+     */
     loadState(state: string) {
         this.currentState = State.deserialize(state, this.gameTemplate);
     }
 
+    /**
+     * Simulate one tick to the given state
+     * @param state to be updated
+     * @returns void
+     */
     tick(state: State) {
         this.debugger.onTickStart(state);
-        if (this.debugger.cancelTick) {
-            return;
-        }
 
         state.frameIndex++;
 
@@ -81,6 +102,10 @@ export class Engine {
         this.debugger.onTickEnd();
     }
 
+    /**
+     * Render the given state to the canvas
+     * @param state 
+     */
     render(state: State) {
         this.debugger.onRenderStart();
         this.gameCanvas.clear();
@@ -113,11 +138,12 @@ export class Engine {
         };
     }
 
+    /**
+     * Create actions from inputs for current context for local player
+     */
     setActionsFromInputs() {
         const actions = this.gameTemplate.gameMetadata.actions[this.currentState.actionContext];
         const clearKeys = [];
-
-        this.currentState.actions = [];
 
         if (actions) {
             for (const actionType in actions) {
@@ -144,52 +170,26 @@ export class Engine {
         }
     }
 
-    saveStateToBuffer() {
-        if (this.currentState.frameIndex % this.fullSaveStateFrameCount === 0) {
-            this.stateBuffer.push(this.currentState.clone(this.gameTemplate));
-        } else {
-            this.stateBuffer.push(this.currentState.lightClone());
-        }
-    }
-
-    setActionsFromReplay() {
-        if (this.replayIndex >= this.stateBuffer.length) {
-            this.replayIndex = -1;
-            return;
-        }
-
-        const savedState = this.stateBuffer[this.replayIndex++];
-        if (savedState.entities.length > 0) {
-            this.currentState = savedState.clone(this.gameTemplate);
-        } else {
-            this.currentState.actions = savedState.actions;
-            this.currentState.actionContext = savedState.actionContext;
-            this.currentState.frameIndex = savedState.frameIndex;
-        }
-    }
-
     // Based on https://gameprogrammingpatterns.com/game-loop.html
     gameLoop() {
-        this.debugger.onGameLoopStart();
-
         const currentTime = performance.now();
         const elapsedTime = currentTime - this.previousUpdateTime;
         this.previousUpdateTime = currentTime;
         this.updateLag += elapsedTime;
 
         let updateCount = 0;
-        while (this.updateLag >= this.msPerFrame && updateCount < this.maxCatchupFrames) {
+
+        // Simulate as many frames as needed, but not more than max catchup frames
+        // TODO: Limit number of frames to a specific amount of ms instead of number
+        while (this.updateLag >= this.MS_PER_FRAME && updateCount < this.MAX_CATCHUP_FRAMES && !this.debugger.pauseLoop) {
             updateCount++;
 
-            if (this.replayIndex === -1) {
-                this.setActionsFromInputs();
-                this.saveStateToBuffer();
-            } else {
-                this.setActionsFromReplay();
-            }
+            this.currentState.clearActions();
+            this.setActionsFromInputs();
+            this.rollback.saveStateToBuffer(this.currentState);
 
             this.tick(this.currentState);
-            this.updateLag -= this.msPerFrame;
+            this.updateLag -= this.MS_PER_FRAME;
         }
 
         this.render(this.currentState);

@@ -12,22 +12,27 @@ export type SerializedState = {
 
 export class State {
     constructor(
+        private gameTemplate: GameTemplate,
         public entities: GenericEntity[] = [],
         public actions: Action[] = [],
         public actionContext = "default",
-        public frameIndex: number = 0
+        public frameIndex: number = 0,
     ) { }
 
-    clone(gameTemplate: GameTemplate) {
-        return State.deserialize(this.serialize(), gameTemplate);
+    clone() {
+        return State.deserialize(this.serialize(), this.gameTemplate);
     }
 
-    lightClone() {
+    cloneActions() {
         // using new every frame may be an issue?
         // also the name of this function sucks
-        return new State([], this.actions.map(action => {
+        return new State(this.gameTemplate, [], this.actions.map(action => {
             return { ...action };
         }), this.actionContext, this.frameIndex);
+    }
+
+    clearActions() {
+        this.actions = [];
     }
 
     serialize() {
@@ -70,6 +75,6 @@ export class State {
             entities.push(entity);
         });
 
-        return new State(entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
+        return new State(gameTemplate, entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
     }
 }
