@@ -3,39 +3,61 @@ import { Engine } from "engine.js";
 
 
 export class EngineDebugger {
-    pauseUpdate = false;
-    lastTickTime = 0;
-    lastRenderTime = 0;
-    currentSkipCount = 0;
-    skipRenderFrames = 0;
-    pauseGameFrameIndex = -1;
+    private _pauseLoop = false;
+    private _stepByStep = false;
+    private _breakFrames: number[] = [];
 
     timers = {
         tickStart: 0,
         renderStart: 0
     };
 
-    constructor(private engine: Engine) {
+    times = {
+        lastTick: 0,
+        lastRender: 0,
+    };
 
+    constructor(private engine: Engine) { }
+
+    pause() {
+        this._pauseLoop = true;
     }
 
-    get cancelTick() {
-        return this.pauseUpdate;
+    unpause() {
+        this._pauseLoop = false;
+        this._stepByStep = false;
     }
 
+    addBreakFrame(index: number) {
+        this._breakFrames.push(index);
+    }
+
+    step() {
+        this._stepByStep = true;
+        this._pauseLoop = false;
+    }
+
+    get pauseLoop() {
+        return this._pauseLoop;
+    }
 
     onTickStart(state: State) {
-        if (state.frameIndex === this.pauseGameFrameIndex) {
-            this.pauseUpdate = true;
+        if (this._breakFrames.includes(state.frameIndex)) {
+            this._pauseLoop = true;
         }
 
         this.timers.tickStart = performance.now();
 
-        return this.pauseUpdate;
+        return this._pauseLoop;
     }
 
     onTickEnd() {
-        this.lastTickTime = performance.now() - this.timers.tickStart;
+        this.times.lastTick = performance.now() - this.timers.tickStart;
+
+        if (this._stepByStep) {
+            this._stepByStep = false;
+            this._pauseLoop = true;
+        }
     }
 
     onRenderStart() {
@@ -43,13 +65,7 @@ export class EngineDebugger {
     }
 
     onRenderEnd() {
-        this.lastRenderTime = performance.now() - this.timers.renderStart;
-    }
-
-    onGameLoopStart() {
-        if (!this.pauseUpdate && this.currentSkipCount++ > this.skipRenderFrames) {
-            this.currentSkipCount = 0;
-        }
+        this.times.lastRender = performance.now() - this.timers.renderStart;
     }
 
     renderDebug(ctx: CanvasRenderingContext2D, state: State) {
@@ -61,28 +77,28 @@ export class EngineDebugger {
         ctx.fillStyle = "white";
         ctx.font = "32px monospace";
         ctx.fillText("= " + this.engine.name + " =", 10, debugYPos += 30);
-        ctx.fillText("frame: " + state.frameIndex + (this.engine.replayIndex > -1 ? " (replaying)" : ""), 10, debugYPos += 30);
-        ctx.fillText("tick : " + this.lastTickTime.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("rend : " + this.lastRenderTime.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("lag  : " + this.engine.updateLag.toFixed(2) + "ms " + (this.engine.updateLag > this.engine.msPerFrame ? " (can't keep up!)" : ""), 10, debugYPos += 30);
+        ctx.fillText("frame: " + state.frameIndex, 10, debugYPos += 30);
+        ctx.fillText("tick : " + this.times.lastTick.toFixed(2) + "ms", 10, debugYPos += 30);
+        ctx.fillText("rend : " + this.times.lastRender.toFixed(2) + "ms", 10, debugYPos += 30);
+        ctx.fillText("lag  : " + this.engine.updateLag.toFixed(2) + "ms " + (this.engine.updateLag > this.engine.MS_PER_FRAME ? " (can't keep up!)" : ""), 10, debugYPos += 30);
         ctx.fillText("ctx  : " + this.engine.currentState.actionContext, 10, debugYPos += 30);
         ctx.fillText("acts : " + this.engine.currentState.actions.map(a => `${a.ownerId}:${a.type}`).join(", "), 10, debugYPos += 30);
 
-        this.renderTimeline(ctx, this.engine.stateBuffer.map(s => {
+        this.renderTimeline(ctx, this.engine.rollback.stateBuffer.map(s => {
             return { color: s.actionContext === "default" ? "dodgerblue" : "orange", height: 0.02 + s.actions.length / 5 };
         }), {
             title: "Actions count and context in frame buffer",
             width: w, top: h - 130, height: 130,
-            ...this.getLiveDisplayOffsets(this.engine.stateBuffer.length, 60 * 5, this.engine.replayIndex),
+            ...this.getLiveDisplayOffsets(this.engine.rollback.stateBuffer.length, 60 * 5, this.engine.rollback.replayIndex),
             highlightedIndex: this.engine.currentState.frameIndex
         });
 
-        this.renderTimeline(ctx, this.engine.stateBuffer.map(s => {
+        this.renderTimeline(ctx, this.engine.rollback.stateBuffer.map(s => {
             return { color: s.entities.length > 0 ? "orange" : "dodgerblue", height: s.entities.length > 0 ? 1 : 0.5 };
         }), {
             title: "Snapshot vs actions in frame buffer",
             width: w, top: h - 185, height: 50,
-            ...this.getLiveDisplayOffsets(this.engine.stateBuffer.length, 60 * 5, this.engine.replayIndex),
+            ...this.getLiveDisplayOffsets(this.engine.rollback.stateBuffer.length, 60 * 5, this.engine.rollback.replayIndex),
             highlightedIndex: this.engine.currentState.frameIndex
         });
 
