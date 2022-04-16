@@ -30,6 +30,7 @@ export class Engine {
         this.gameCanvas = new GameCanvas(canvasContainer);
         this.debugger = new EngineDebugger(this);
         this.inputs = new EngineInput();
+        this.actionsAPI = new ActionsAPI(this.currentState);
         this.reloadGameTemplate();
     }
 
@@ -106,9 +107,9 @@ export class Engine {
     }
 
     getAPIForState(state: State): SystemContext {
-        // TODO: This should probably really be optimized as it's discarded after every usage!
+        this.actionsAPI.state = state;
         return {
-            actions: new ActionsAPI(state)
+            actions: this.actionsAPI
         };
     }
 
