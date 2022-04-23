@@ -8,6 +8,8 @@ import { Transform } from "../components/transform.js";
 export const RenderDebugSystem: System = {
     requiredComponents: [[Transform, Debug], [Transform, Owner], [Menu]],
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, entities: Entity[], ownedEntities: Entity[], menus: Entity[]) {
+        ctx.fillStyle = "rgb(80, 80, 80)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (const entity of entities) {
             const position = entity.transform.position;
             const size = entity.transform.size;
@@ -46,7 +48,6 @@ export const RenderDebugSystem: System = {
                 for (let i = 0; i < e.menu.names.length; i++) {
                     const menuText = e.menu.names[i];
                     ctx.fillText((i === e.menu.index ? "> " : "  ") + menuText, 1920 / 2 - 240, 1080 / 2 + i * 60);
-
                 }
             }
         }

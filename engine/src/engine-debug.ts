@@ -1,11 +1,14 @@
 import { State } from "./frame-state.js";
 import { Engine } from "engine.js";
+import { Graphics, GraphType, LabelType } from "graphs.js";
 
 
 export class EngineDebugger {
     private _pauseLoop = false;
-    private _stepByStep = false;
-    private _breakFrames: number[] = [];
+    private stepByStep = false;
+    private breakFrames: number[] = [];
+    private lagHistory: number[] = [];
+    private maxLag = 1;
 
     timers = {
         tickStart: 0,
@@ -25,15 +28,15 @@ export class EngineDebugger {
 
     unpause() {
         this._pauseLoop = false;
-        this._stepByStep = false;
+        this.stepByStep = false;
     }
 
     addBreakFrame(index: number) {
-        this._breakFrames.push(index);
+        this.breakFrames.push(index);
     }
 
     step() {
-        this._stepByStep = true;
+        this.stepByStep = true;
         this._pauseLoop = false;
     }
 
@@ -41,8 +44,15 @@ export class EngineDebugger {
         return this._pauseLoop;
     }
 
+    onGameLoopEnd() {
+        this.lagHistory.push(this.engine.updateLag);
+        if (this.engine.updateLag > this.maxLag) {
+            this.maxLag = this.engine.updateLag;
+        }
+    }
+
     onTickStart(state: State) {
-        if (this._breakFrames.includes(state.frameIndex)) {
+        if (this.breakFrames.includes(state.frameIndex)) {
             this._pauseLoop = true;
         }
 
@@ -54,8 +64,8 @@ export class EngineDebugger {
     onTickEnd() {
         this.times.lastTick = performance.now() - this.timers.tickStart;
 
-        if (this._stepByStep) {
-            this._stepByStep = false;
+        if (this.stepByStep) {
+            this.stepByStep = false;
             this._pauseLoop = true;
         }
     }
@@ -68,7 +78,7 @@ export class EngineDebugger {
         this.times.lastRender = performance.now() - this.timers.renderStart;
     }
 
-    renderDebug(ctx: CanvasRenderingContext2D, state: State) {
+    renderDebug(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, state: State) {
         const h = this.engine.gameCanvas.canvas.height;
         const w = this.engine.gameCanvas.canvas.width;
 
@@ -84,68 +94,48 @@ export class EngineDebugger {
         ctx.fillText("ctx  : " + this.engine.currentState.actionContext, 10, debugYPos += 30);
         ctx.fillText("acts : " + this.engine.currentState.actions.map(a => `${a.ownerId}:${a.type}`).join(", "), 10, debugYPos += 30);
 
-        this.renderTimeline(ctx, this.engine.rollback.stateBuffer.map(s => {
-            return { color: s.actionContext === "default" ? "dodgerblue" : "orange", height: 0.02 + s.actions.length / 5 };
-        }), {
-            title: "Actions count and context in frame buffer",
-            width: w, top: h - 130, height: 130,
-            ...this.getLiveDisplayOffsets(this.engine.rollback.stateBuffer.length, 60 * 5, this.engine.rollback.replayIndex),
-            highlightedIndex: this.engine.currentState.frameIndex
+        let barIndex = 0;
+        Graphics.renderGraph(ctx, {
+            data: this.engine.rollback.stateBuffer.map(s => {
+                return {
+                    colors: s.actions.map(a => Graphics.colorFromText(a.context)),
+                    values: s.actions.map(_ => 1)
+                };
+            }),
+            type: GraphType.bars,
+            labels: {
+                title: "Actions count and their context in frames buffer",
+                bottomCenter: { type: LabelType.middle },
+                topLeft: { prefix: "max displayed action count: ", type: LabelType.maxValue },
+                topRight: { prefix: "max displayed action count: ", type: LabelType.maxValue },
+                bottomLeft: { type: LabelType.start },
+                bottomRight: { type: LabelType.end }
+            },
+            crop: Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5),
+            position: { x: 0, y: canvas.height * (0.85 - barIndex++ * 0.16) },
+            size: { w: canvas.width, h: canvas.height * 0.15 }
         });
 
-        this.renderTimeline(ctx, this.engine.rollback.stateBuffer.map(s => {
-            return { color: s.entities.length > 0 ? "orange" : "dodgerblue", height: s.entities.length > 0 ? 1 : 0.5 };
-        }), {
-            title: "Snapshot vs actions in frame buffer",
-            width: w, top: h - 185, height: 50,
-            ...this.getLiveDisplayOffsets(this.engine.rollback.stateBuffer.length, 60 * 5, this.engine.rollback.replayIndex),
-            highlightedIndex: this.engine.currentState.frameIndex
+        Graphics.renderGraph(ctx, {
+            slidingAverage: 10,
+            data: this.lagHistory,
+            type: GraphType.lines,
+            maxValue: 20,
+            minValue: 0,
+            labels: {
+                title: "Lag over time",
+                bottomCenter: { type: LabelType.middle },
+                topLeft: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+                topRight: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+                bottomRight: { type: LabelType.end },
+                yAxisZero: { suffix: " ms", decimals: 0, type: LabelType.minValue },
+                xAxisZero: { type: LabelType.start },
+            },
+            crop: Graphics.cropEnd(this.lagHistory.length, 60 * 5),
+            position: { x: 0, y: canvas.height * (0.85 - barIndex++ * 0.16) },
+            size: { w: canvas.width, h: canvas.height * 0.15 }
         });
 
         ctx.restore();
-    }
-
-    getLiveDisplayOffsets(total: number, count: number, seek = -1) {
-        if (seek === -1) {
-            return { start: Math.max(total - count, 0), end: total };
-        } else {
-            const start = Math.max(0, seek - count / 2);
-            const end = Math.min(total, start + count);
-            return { start: Math.max(0, end - count), end: Math.min(end, total) };
-        }
-    }
-
-    renderTimeline(ctx: CanvasRenderingContext2D, data: { height: number, color: string }[], {
-        title = "Untitled timeline",
-        left = 0, top = 0, height = 100, width = 1000,
-        start = 0, end = 1000,
-        highlightedIndex = -1,
-        offsetLabel = ""
-    }) {
-        const topYOffset = 30;
-        end = Math.min(data.length, end);
-        const count = end - start;
-
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(left, top, width, height);
-        ctx.textAlign = "center";
-        ctx.fillStyle = "white";
-        ctx.font = "22px monospace";
-        ctx.fillText(title, left + width / 2, top + 20);
-        ctx.textAlign = "left";
-        ctx.fillText(start.toString(), left + 10, top + 20);
-        ctx.textAlign = "right";
-        ctx.fillText(end + (data.length === end ? "" : ` / ${data.length}`) + " " + offsetLabel, left + width - 10, top + 20);
-
-        for (let i = start; i < end; i++) {
-            const x = 5 + (width - 5) * ((i - start) / count);
-            const y = top + topYOffset;
-            ctx.fillStyle = data[i].color;
-            ctx.fillRect(x, y, 2, data[i].height * (height - topYOffset));
-            if (i === highlightedIndex) {
-                ctx.strokeStyle = "gold";
-                ctx.strokeRect(x - 2, y - 2, 6, data[i].height * (height - topYOffset) + 4);
-            }
-        }
     }
 }
