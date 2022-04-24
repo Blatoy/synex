@@ -14,5 +14,5 @@ export class Component {
  */
 export type SerializedComponent = {
     Type: typeof Component
-    valuesOverride: { [key: string]: unknown }
+    valuesOverride?: { [key: string]: unknown }
 };

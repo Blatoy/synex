@@ -1,6 +1,7 @@
 import { Actions } from "./game-api/action.js";
 import { Component } from "./component.js";
 import { GenericEntity } from "./entity.js";
+import { Entities } from "./game-api/entities.js";
 
 /**
  * Defines game logic, should not contain state!
@@ -16,4 +17,5 @@ export type System = {
 
 export type SystemContext = {
     actions: Actions
+    entities: Entities
 }

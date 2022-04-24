@@ -7,6 +7,7 @@ import { EngineDebugger } from "engine-debug.js";
 import { ActionsAPI } from "game-api/actions-api.js";
 import { EngineInput } from "engine-input.js";
 import { Rollback } from "rollback.js";
+import { EntitiesAPI } from "game-api/entities-api.js";
 
 
 export class Engine {
@@ -24,6 +25,7 @@ export class Engine {
     inputs: EngineInput;
     rollback: Rollback;
     actionsAPI: ActionsAPI;
+    entitiesAPI: EntitiesAPI;
 
     gameCanvas;
 
@@ -37,6 +39,7 @@ export class Engine {
         this.inputs = new EngineInput();
         this.rollback = new Rollback(this);
         this.actionsAPI = new ActionsAPI(this.currentState);
+        this.entitiesAPI = new EntitiesAPI();
         this.reloadGameTemplate();
     }
 
@@ -99,6 +102,9 @@ export class Engine {
             system.update?.call(this.getAPIForState(state), ...matchingEntityGroups);
         }
 
+        // Add any created entity during this tick to the state
+        this.entitiesAPI.spawnQueuedEntities(state.entities);
+
         this.debugger.onTickEnd();
     }
 
@@ -134,7 +140,8 @@ export class Engine {
     getAPIForState(state: State): SystemContext {
         this.actionsAPI.state = state;
         return {
-            actions: this.actionsAPI
+            actions: this.actionsAPI,
+            entities: this.entitiesAPI
         };
     }
 
