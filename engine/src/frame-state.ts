@@ -17,6 +17,7 @@ export class State {
         public actions: Action[] = [],
         public actionContext = "default",
         public frameIndex: number = 0,
+        public onlyActions = false
     ) { }
 
     clone() {
@@ -28,11 +29,16 @@ export class State {
         // also the name of this function sucks
         return new State(this.gameTemplate, [], this.actions.map(action => {
             return { ...action };
-        }), this.actionContext, this.frameIndex);
+        }), this.actionContext, this.frameIndex, true);
     }
 
     clearActions() {
         this.actions = [];
+    }
+
+    convertToActionState() {
+        this.entities = [];
+        this.onlyActions = true;
     }
 
     serialize() {
@@ -50,7 +56,7 @@ export class State {
         const deserialized: SerializedState = JSON.parse(state);
         const savedEntities: SerializedEntity[] = deserialized.entities; // TODO: Correct typing
 
-        savedEntities.forEach((savedEntity) => {
+        for (const savedEntity of savedEntities) {
             // Create entity
             const entity: GenericEntity = {
                 meta: new MetaEntity(
@@ -73,7 +79,7 @@ export class State {
             }
 
             entities.push(entity);
-        });
+        }
 
         return new State(gameTemplate, entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
     }

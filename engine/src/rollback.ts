@@ -1,11 +1,11 @@
+import { Engine } from "engine.js";
 import { State } from "frame-state.js";
 
 export class Rollback {
     stateBuffer: State[] = [];
     readonly FULL_SNAPSHOT_EVERY_FRAME_COUNT = 60;
 
-
-    replayIndex = -1;
+    constructor(private engine: Engine) { }
 
     saveStateToBuffer(state: State) {
         if (state.frameIndex % this.FULL_SNAPSHOT_EVERY_FRAME_COUNT === 0) {
@@ -15,20 +15,38 @@ export class Rollback {
         }
     }
 
-    /* setActionsFromReplay() {
-         if (this.replayIndex >= this.stateBuffer.length) {
-             this.replayIndex = -1;
-             return;
-         }
- 
-         const savedState = this.stateBuffer[this.replayIndex++];
-         if (savedState.entities.length > 0) {
-             this.currentState = savedState.clone(this.gameTemplate);
-         } else {
-             this.currentState.actions = savedState.actions;
-             this.currentState.actionContext = savedState.actionContext;
-             this.currentState.frameIndex = savedState.frameIndex;
-         }
-     } */
+    fixStateBuffer() {
+
+    }
+
+    recomputeStateSinceFrame(index: number) {
+        if (index > this.stateBuffer.length) {
+            console.warn("Attempting to rollback in the future");
+        }
+
+        // Find full snapshot
+        let fullSnapshot = this.stateBuffer[index];
+        while (fullSnapshot.onlyActions) {
+            fullSnapshot = this.stateBuffer[--index];
+        }
+
+        // Load full snapshot
+        const restoredState = fullSnapshot.clone();
+
+        // Apply tick until buffer is empty
+        for (let i = index; i < this.stateBuffer.length; i++) {
+            this.setActionsFromBuffer(restoredState, i);
+            this.engine.tick(restoredState);
+        }
+
+        return restoredState;
+    }
+
+    setActionsFromBuffer(state: State, index: number) {
+        const savedState = this.stateBuffer[index];
+        state.actions = savedState.actions;
+        state.actionContext = savedState.actionContext;
+        state.frameIndex = savedState.frameIndex;
+    }
 
 }

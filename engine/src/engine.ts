@@ -35,7 +35,7 @@ export class Engine {
         this.gameCanvas = new GameCanvas(canvasContainer);
         this.debugger = new EngineDebugger(this);
         this.inputs = new EngineInput();
-        this.rollback = new Rollback();
+        this.rollback = new Rollback(this);
         this.actionsAPI = new ActionsAPI(this.currentState);
         this.reloadGameTemplate();
     }
@@ -136,6 +136,10 @@ export class Engine {
         return {
             actions: this.actionsAPI
         };
+    }
+
+    rollbackFromFrame(index: number) {
+        this.currentState = this.rollback.recomputeStateSinceFrame(index);
     }
 
     /**
