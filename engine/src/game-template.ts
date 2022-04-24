@@ -43,7 +43,7 @@ export class GameTemplate {
     loadScene(scene: Scene) {
         const entities: GenericEntity[] = [];
 
-        scene.entities.forEach((entityDefinition) => {
+        for (const entityDefinition of scene.entities) {
             const entity: GenericEntity = {
                 meta: new MetaEntity(
                     entityDefinition.metadata.name,
@@ -56,7 +56,7 @@ export class GameTemplate {
             });
 
             entities.push(entity);
-        });
+        }
 
         return entities;
     }
