@@ -35,19 +35,21 @@ export const RenderDebugSystem: System = {
             }
         }
 
-        for (const e of menus) {
-            if (e.menu.opened) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-                ctx.fillRect(0, 0, 1920, 1080);
-                ctx.fillStyle = "rgb(250, 255, 255)";
-                ctx.font = "64px monospace";
-                ctx.textAlign = "center";
-                ctx.fillText("Game menu", 1920 / 2, 1080 / 2 - 100);
-                ctx.textAlign = "left";
-                ctx.font = "40px monospace";
-                for (let i = 0; i < e.menu.names.length; i++) {
-                    const menuText = e.menu.names[i];
-                    ctx.fillText((i === e.menu.index ? "> " : "  ") + menuText, 1920 / 2 - 240, 1080 / 2 + i * 60);
+        if (menus) {
+            for (const e of menus) {
+                if (e.menu.opened) {
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+                    ctx.fillRect(0, 0, 1920, 1080);
+                    ctx.fillStyle = "rgb(250, 255, 255)";
+                    ctx.font = "64px monospace";
+                    ctx.textAlign = "center";
+                    ctx.fillText("Game menu", 1920 / 2, 1080 / 2 - 100);
+                    ctx.textAlign = "left";
+                    ctx.font = "40px monospace";
+                    for (let i = 0; i < e.menu.names.length; i++) {
+                        const menuText = e.menu.names[i];
+                        ctx.fillText((i === e.menu.index ? "> " : "  ") + menuText, 1920 / 2 - 240, 1080 / 2 + i * 60);
+                    }
                 }
             }
         }

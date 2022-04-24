@@ -31,6 +31,7 @@ export const gameDefinition: GameMetadata = {
     systems: await importSystems(
         "velocity",
         "render-debug",
+        "player-spawner",
         "force",
         "bounce",
         "move",
@@ -49,6 +50,7 @@ export const gameDefinition: GameMetadata = {
             "open_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
         },
         "menu": {
+            "spawn": { keys: [Key.P], synchronized: false, fireOnce: true },
             "close_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
             "enter": { keys: [Key.Enter, Key.Space], synchronized: false, fireOnce: true },
             "left": { keys: [Key.A, Key.ArrowLeft, Key.W, Key.ArrowUp], synchronized: false, fireOnce: true },
