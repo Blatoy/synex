@@ -193,7 +193,8 @@ export class Engine {
         }
 
         this.render(this.currentState);
-        this.debugger.renderDebug(this.gameCanvas.ctx, this.currentState);
+        this.debugger.renderDebug(this.gameCanvas.ctx, this.gameCanvas.canvas, this.currentState);
+        this.debugger.onGameLoopEnd(updateCount);
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
