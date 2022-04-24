@@ -14,6 +14,9 @@ export class EngineInput {
     }
 
     private onKeyDown(key: KeyboardEvent) {
+        if (this.ignoreInputs) {
+            return;
+        }
         this.heldButtons.add(key.code as Key);
     }
 

@@ -11,8 +11,16 @@ window.addEventListener("load", async () => {
     engines.push(new Engine("Engine 1", gameTemplate, document.getElementById("game-1") as HTMLDivElement));
     engines.push(new Engine("Engine 2", gameTemplate, document.getElementById("game-2") as HTMLDivElement));
 
+    engines[1].inputs.ignoreInputs = true;
+
     engines.forEach((engine) => {
         engine.start();
+        engine.gameCanvas.canvas.addEventListener("click", () => {
+            engines.forEach((engine) => {
+                engine.inputs.ignoreInputs = true;
+            });
+            engine.inputs.ignoreInputs = false;
+        });
     });
 });
 
