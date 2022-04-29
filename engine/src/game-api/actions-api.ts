@@ -8,7 +8,7 @@ export class ActionsAPI implements Actions {
      * @param ownerId unique id owning the component
      * @returns List of actions for specified id
      */
-    ofPlayer(ownerId: number): { [key: string]: Action; } {
+    ofPlayer(ownerId: string): { [key: string]: Action; } {
         const actions: { [key: string]: Action; } = {};
         for (const action of this.state.actions) {
             if (action.ownerId === ownerId) {

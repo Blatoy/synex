@@ -47,6 +47,12 @@ export class EngineDebugger {
         return this._pauseLoop;
     }
 
+    onLateJoin(state: State) {
+        for (let i = 0; i < state.frameIndex; i++) {
+            this.rollbackCountPerFrame.push(-1); // -1 => cannot rollback
+        }
+    }
+
     onGameLoopEnd(updateCount: number) {
         this.lagHistory.push(this.engine.updateLag);
         this.updateCountHistory.push(updateCount);

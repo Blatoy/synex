@@ -1,5 +1,5 @@
 export type Actions = {
-    ofPlayer(ownerId: number): { [key: string]: Action }
+    ofPlayer(ownerId: string): { [key: string]: Action }
     byType(context: string, type: string): Action[]
     setContext(context: string): void
     local: { [key: string]: Action }
@@ -7,7 +7,7 @@ export type Actions = {
 
 export type Action = {
     type: string,
-    ownerId: number,
+    ownerId: string,
     context: string,
     data?: unknown
 }
