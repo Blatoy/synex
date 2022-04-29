@@ -12,7 +12,8 @@ import { Velocity } from "../components/velocity.js";
 export const PlayerSpawner: System = {
     requiredComponents: [Spawner, Transform],
     updateAll(spawner: Entity) {
-        const joinActions = this.actions.byType("network", "join");
+        const joinActions = this.actions.byType("network", "sceneLoaded");
+
 
         for (const action of joinActions) {
             this.entities.spawn(

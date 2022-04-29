@@ -30,7 +30,7 @@ export const RenderDebugSystem: System = {
                 ctx.font = "32px monospace";
                 ctx.fillStyle = `#${entity.debug.fillColor.toHex()}`;
                 ctx.textAlign = "center";
-                ctx.fillText(entity.meta.name, position.x + size.x / 2, position.y - 10);
+                ctx.fillText(`${entity.transform.position.x},${entity.transform.position.y}`, position.x + size.x / 2, position.y - 10);
                 ctx.textAlign = "left";
             }
         }

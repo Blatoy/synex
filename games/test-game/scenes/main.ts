@@ -4,8 +4,7 @@ import { Debug } from "test-game/components/debug.js";
 import { Transform } from "test-game/components/transform.js";
 import { Velocity } from "test-game/components/velocity.js";
 import { Bounce } from "test-game/components/bounce.js";
-import { Owner } from "test-game/components/owner.js";
-import { Menu } from "test-game/components/menu.js";
+import { Spawner } from "test-game/components/spawner.js";
 
 const main: Scene = {
     metadata: {
@@ -114,10 +113,13 @@ main.entities.push({
     },
     components: [
         {
+            Type: Spawner
+        },
+        {
             Type: Transform,
             valuesOverride: {
                 position: { x: 1920 / 2, y: 1080 / 2 },
-                size: { x: 50, y: 50}
+                size: { x: 50, y: 50 }
             }
         },
         {
@@ -134,7 +136,7 @@ main.entities.push({
                     g: 255
                 },
                 fillRect: true,
-                showName: true
+                showName: false
             }
         }
     ]

@@ -10,6 +10,7 @@ import { Bounce } from "./components/bounce.js";
 import { Key } from "game-lib/utils/keycode.js";
 import { Owner } from "./components/owner.js";
 import { Menu } from "./components/menu.js";
+import { Spawner } from "./components/spawner.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -24,7 +25,8 @@ const components = {
     debug: Debug,
     bounce: Bounce,
     owner: Owner,
-    menu: Menu
+    menu: Menu,
+    spawner: Spawner
 };
 
 export const gameDefinition: GameMetadata = {
