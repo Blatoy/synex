@@ -50,7 +50,6 @@ export class SystemManager {
             matchingEntityGroups.push(entities.filter(entity => entity.meta.hasComponents(requiredComponentsArray)));
         }
 
-        const filteredEntityGroups = matchingEntityGroups.filter(groups => groups.length > 0);
-        return filteredEntityGroups;
+        return matchingEntityGroups;
     }
 }
