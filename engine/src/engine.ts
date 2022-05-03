@@ -161,7 +161,9 @@ export class Engine {
                 }
             }
 
-            system.render?.call(this.getAPIForState(state), this.gameCanvas.canvas, this.gameCanvas.ctx, ...matchingEntityGroups);
+            if (matchingEntityGroups.length > 0) {
+                system.render?.call(this.getAPIForState(state), this.gameCanvas.canvas, this.gameCanvas.ctx, ...matchingEntityGroups);
+            }
         }
 
         this.debugger.onRenderEnd();
