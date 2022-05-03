@@ -17,6 +17,7 @@ export class Rollback {
     }
 
     onLateJoin(state: State) {
+        this.stateBuffer = [];
         for (let i = 0; i < state.frameIndex - 1; i++) {
             this.stateBuffer.push(state.cloneActions()); // -1 => cannot rollback
         }
