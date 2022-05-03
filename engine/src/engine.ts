@@ -59,7 +59,7 @@ export class Engine {
         let connected = false;
         try {
             // Connect to game server
-            await this.network.connect("localhost@" + this.name, 49131);
+            await this.network.connect(window.location.hostname, 43222);
 
             // Check if there is an existing state
             const latestState = await this.network.getLatestState();

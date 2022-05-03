@@ -1,6 +1,7 @@
 import { Engine } from "engine.js";
 import { Action } from "game-lib/types/game-api/action.js";
 import { LocalAdapter } from "network-adapters/local/local-adapter.js";
+import { WSAdapter } from "network-adapters/ws-server/ws-adapter.js";
 import { NetworkAdapterInterface } from "network-adapters/network-interface.js";
 
 type ActionQueue = Map<number, Record<string, Action[]>>;
@@ -12,7 +13,7 @@ export class Network {
     private _actionQueue: ActionQueue = new Map();
 
     constructor(private engine: Engine) {
-        this.adapter = new LocalAdapter(
+        this.adapter = new WSAdapter(
             this.onRequestState.bind(this),
             this.onEventReceived.bind(this)
         );
