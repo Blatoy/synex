@@ -19,6 +19,7 @@ export class Network {
 
     constructor(private engine: Engine) {
         this.adapter = new WSAdapter(
+            this.onRequestFrameIndex.bind(this),
             this.onRequestState.bind(this),
             this.onEventsReceived.bind(this)
         );
@@ -52,6 +53,11 @@ export class Network {
 
     private onRequestState(): string {
         return this.engine.serializeState();
+    }
+
+    // TODO: this should be tracked service side
+    private onRequestFrameIndex(): number {
+        return this.engine.currentState.frameIndex;
     }
 
     private onEventsReceived(actions: string[], context: string, playerId: string, frameIndex: number): void {

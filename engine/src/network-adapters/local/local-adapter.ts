@@ -12,6 +12,7 @@ export class LocalAdapter extends NetworkAdapterInterface {
     public lag = 0;
 
     constructor(
+        requestFrameIndexHandler: () => number,
         requestStateHandler: () => string,
         eventHandler: (action: string[], context: string, playerId: string, frameIndex: number) => void) {
 

@@ -1,5 +1,6 @@
 export abstract class NetworkAdapterInterface {
     constructor(
+        public requestFrameIndexHandler: () => number,
         public requestStateHandler: () => string,
         public eventHandler: (actions: string[], context: string, playerId: string, frameIndex: number) => void
     ) { }
