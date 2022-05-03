@@ -11,6 +11,7 @@ export class Network {
     private _localId = "-1";
 
     private _actionQueue: ActionQueue = new Map();
+    public packetSentThisFrame = false;
 
     constructor(private engine: Engine) {
         this.adapter = new WSAdapter(
@@ -67,6 +68,13 @@ export class Network {
     }
 
     sendToAll(actions: string[], context: string, frameIndex: number) {
+        if (this.packetSentThisFrame) {
+            console.warn("Cannot use sendToAll twice per frame");
+            return;
+        }
+
+        this.packetSentThisFrame = true;
+
         // TODO: this is a hack as otherwise loadScene is called too early and ignored
         // this is probably an issue that should be fixed
         if (context === "network") {

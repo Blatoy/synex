@@ -108,6 +108,8 @@ export class Engine {
      */
     tick(state: State) {
         this.debugger.onTickStart(state);
+        // TODO: Is this really the correct place to do it? Rollback will set it back to false
+        this.network.packetSentThisFrame = false;
 
         state.frameIndex++;
 
