@@ -216,6 +216,7 @@ export class Engine {
         const clearKeys = [];
 
         if (actions) {
+            const actionsPerformed: string[] = [];
             for (const actionType in actions) {
                 const action = actions[actionType];
                 const performingAction = action.keys.some(key => this.inputs.isHeld(key));
@@ -224,13 +225,15 @@ export class Engine {
                         clearKeys.push(...action.keys);
                     }
 
-                    this.network.sendToAll(actionType, this.currentState.actionContext, this.currentState.frameIndex);
+                    actionsPerformed.push(actionType);
                 }
             }
 
             for (const key of clearKeys) {
                 this.inputs.clearHeld(key);
             }
+
+            this.network.sendToAll(actionsPerformed, this.currentState.actionContext, this.currentState.frameIndex);
         } else {
             console.warn("Invalid action state: ", this.currentState.actionContext);
         }

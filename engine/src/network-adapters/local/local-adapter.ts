@@ -13,9 +13,9 @@ export class LocalAdapter extends NetworkAdapterInterface {
 
     constructor(
         requestStateHandler: () => string,
-        eventHandler: (action: string, context: string, playerId: string, frameIndex: number) => void) {
+        eventHandler: (action: string[], context: string, playerId: string, frameIndex: number) => void) {
 
-        super(requestStateHandler, eventHandler);
+        super(requestFrameIndexHandler, requestStateHandler, eventHandler);
         this.playerId = playerCount++;
     }
 
@@ -27,7 +27,7 @@ export class LocalAdapter extends NetworkAdapterInterface {
         }
     }
 
-    broadcastAction(action: string, context: string, frameIndex: number) {
+    broadcastAction(action: string[], context: string, frameIndex: number) {
         for (const client of this.otherClients) {
             if (this.jitter === 0 && this.lag === 0) {
                 client.eventHandler(action, context, this.playerId.toString(), frameIndex);

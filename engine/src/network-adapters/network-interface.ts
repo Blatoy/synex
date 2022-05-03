@@ -1,7 +1,7 @@
 export abstract class NetworkAdapterInterface {
     constructor(
         public requestStateHandler: () => string,
-        public eventHandler: (action: string, context: string, playerId: string, frameIndex: number) => void
+        public eventHandler: (actions: string[], context: string, playerId: string, frameIndex: number) => void
     ) { }
 
     /**
@@ -24,5 +24,5 @@ export abstract class NetworkAdapterInterface {
      * @param context 
      * @param frameIndex 
      */
-    abstract broadcastAction(action: string, context: string, frameIndex: number): void
+    abstract broadcastAction(actions: string[], context: string, frameIndex: number): void
 }

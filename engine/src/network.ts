@@ -15,7 +15,7 @@ export class Network {
     constructor(private engine: Engine) {
         this.adapter = new WSAdapter(
             this.onRequestState.bind(this),
-            this.onEventReceived.bind(this)
+            this.onEventsReceived.bind(this)
         );
     }
 
@@ -30,7 +30,7 @@ export class Network {
     }
 
     onSceneLoaded(frameIndex: number) {
-        this.sendToAll("sceneLoaded", "network", frameIndex);
+        this.sendToAll(["sceneLoaded"], "network", frameIndex);
     }
 
     public get localId() {
@@ -45,7 +45,7 @@ export class Network {
         return this.engine.serializeState();
     }
 
-    private onEventReceived(action: string, context: string, playerId: string, frameIndex: number): void {
+    private onEventsReceived(actions: string[], context: string, playerId: string, frameIndex: number): void {
         if (!this._actionQueue.has(frameIndex)) {
             this._actionQueue.set(frameIndex, {});
         }
@@ -56,27 +56,30 @@ export class Network {
                 queueForIndex[playerId] = [];
             }
 
-            this._actionQueue.get(frameIndex)?.[playerId].push({
-                type: action,
-                ownerId: playerId,
-                context: context
-            });
-        }
+            for (let i = 0; i < actions.length; i++) {
+                this._actionQueue.get(frameIndex)?.[playerId].push({
+                    type: actions[i],
+                    ownerId: playerId,
+                    context: context
+                });
+            }
 
     }
 
-    sendToAll(action: string, context: string, frameIndex: number) {
+    sendToAll(actions: string[], context: string, frameIndex: number) {
         // TODO: this is a hack as otherwise loadScene is called too early and ignored
         // this is probably an issue that should be fixed
         if (context === "network") {
-            this.onEventReceived(action, context, this.localId, frameIndex);
+            this.onEventsReceived(actions, context, this.localId, frameIndex);
         } else {
-            this.engine.currentState.actions.push({
-                ownerId: this.localId,
-                type: action,
-                context: context
-            });
+            for (let i = 0; i < actions.length; i++) {
+                this.engine.currentState.actions.push({
+                    ownerId: this.localId,
+                    type: actions[i],
+                    context: context
+                });
+            }
         }
-        this.adapter.broadcastAction(action, context, frameIndex);
+        this.adapter.broadcastAction(actions, context, frameIndex);
     }
 }
