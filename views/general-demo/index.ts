@@ -14,7 +14,6 @@ window.addEventListener("load", async () => {
     engines[1].inputs.ignoreInputs = true;
 
     engines.forEach((engine) => {
-        engine.start();
         engine.gameCanvas.canvas.addEventListener("click", () => {
             engines.forEach((engine) => {
                 engine.inputs.ignoreInputs = true;
@@ -22,6 +21,15 @@ window.addEventListener("load", async () => {
             engine.inputs.ignoreInputs = false;
         });
     });
+
+    engines[0].start();
+    // engines[1].start();
+    setTimeout(() => {
+        engines[1].start();
+    }, 100);
+
+    (window as any).engines = engines;
+    (window as any).mode = 1;
 });
 
 window.addEventListener("focus", async () => {
@@ -29,4 +37,23 @@ window.addEventListener("focus", async () => {
     engines.forEach((engine) => {
         engine.reloadGameTemplate();
     });
+});
+
+document.addEventListener("keydown", async (e) => {
+    if (e.key === "r") {
+        await gameTemplate.reload();
+        engines.forEach((engine) => {
+            engine.reloadGameTemplate();
+        });
+    }
+    if (e.key === "t") {
+        engines.forEach((engine) => {
+            engine.rollbackFromFrame(engine.currentState.frameIndex - 120);
+        });
+    }
+    if (e.key === "0") {
+        engines.forEach((engine) => {
+            engine.rollbackFromFrame(0);
+        });
+    }
 });
