@@ -198,7 +198,9 @@ export class Engine {
             // TODO: Prevent sending events again while rollback
             // TODO: Game dev must double check that events are valid
             // TODO: Visualize rollback
+            this.debugger.onRollbackStart();
             this.rollbackFromFrame(earliestFrame);
+            this.debugger.onRollbackEnd();
         }
     }
 

@@ -24,12 +24,14 @@ export class EngineDebugger {
 
     timers = {
         tickStart: 0,
-        renderStart: 0
+        renderStart: 0,
+        rollbackStart: 0
     };
 
     times = {
         lastTick: 0,
         lastRender: 0,
+        lastRollback: 0
     };
 
     constructor(private engine: Engine) { }
@@ -116,6 +118,21 @@ export class EngineDebugger {
         }
 
         this.timers.renderStart = performance.now();
+    }
+
+    onRollbackStart() {
+        if (this.debugDisabled()) {
+            return;
+        }
+
+        this.timers.rollbackStart = performance.now();
+    }
+    onRollbackEnd() {
+        if (this.debugDisabled()) {
+            return;
+        }
+
+        this.times.lastRollback = performance.now() - this.timers.rollbackStart;
     }
 
     onRenderEnd() {
