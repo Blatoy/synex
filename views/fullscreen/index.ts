@@ -2,7 +2,7 @@ import { Engine } from "engine/engine.js";
 import { GameTemplate } from "engine/game-template.js";
 
 let engine: Engine;
-const gameTemplate = new GameTemplate("/scripts/games/test-game");
+const gameTemplate = new GameTemplate("/scripts/games/demo-game");
 
 window.addEventListener("load", async () => {
     await gameTemplate.load();
