@@ -8,6 +8,8 @@ const clientsAdapters: LocalAdapter[] = [];
 export class LocalAdapter extends NetworkAdapterInterface {
     private isHost = false;
     public playerId = -1;
+    public jitter = 0;
+    public lag = 0;
 
     constructor(
         requestStateHandler: () => string,
@@ -27,7 +29,15 @@ export class LocalAdapter extends NetworkAdapterInterface {
 
     broadcastAction(action: string, context: string, frameIndex: number) {
         for (const client of this.otherClients) {
-            client.eventHandler(action, context, this.playerId.toString(), frameIndex);
+            if (this.jitter === 0 && this.lag === 0) {
+                client.eventHandler(action, context, this.playerId.toString(), frameIndex);
+            } else {
+                setTimeout(() => {
+                    setTimeout(() => {
+                        client.eventHandler(action, context, this.playerId.toString(), frameIndex);
+                    }, this.lag);
+                }, Math.random() * this.jitter);
+            }
         }
     }
 
