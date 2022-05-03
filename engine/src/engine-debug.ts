@@ -3,6 +3,13 @@ import { Engine } from "engine.js";
 import { Graphics, GraphSettings, GraphType, LabelType } from "graphs.js";
 
 
+export enum DebugMode {
+    DISABLED,
+    ALL_GRAPHS,
+    ROLLBACK,
+    ROLLBACK_SIMPLE
+}
+
 export class EngineDebugger {
     private _pauseLoop = false;
     private stepByStep = false;
@@ -12,6 +19,8 @@ export class EngineDebugger {
     private tickTimeHistory: number[] = [];
     private renderTimeHistory: number[] = [];
     private updateCountHistory: number[] = [];
+
+    debugLevel = DebugMode.ROLLBACK_SIMPLE;
 
     timers = {
         tickStart: 0,
@@ -48,17 +57,30 @@ export class EngineDebugger {
     }
 
     onLateJoin(state: State) {
+        this.rollbackCountPerFrame = [];
         for (let i = 0; i < state.frameIndex; i++) {
             this.rollbackCountPerFrame.push(-1); // -1 => cannot rollback
         }
     }
 
+    debugDisabled() {
+        return this.debugLevel === DebugMode.DISABLED;
+    }
+
     onGameLoopEnd(updateCount: number) {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         this.lagHistory.push(this.engine.updateLag);
         this.updateCountHistory.push(updateCount);
     }
 
     onTickStart(state: State) {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         if (this.breakFrames.includes(state.frameIndex)) {
             this._pauseLoop = true;
         }
@@ -75,6 +97,10 @@ export class EngineDebugger {
     }
 
     onTickEnd() {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         this.times.lastTick = performance.now() - this.timers.tickStart;
         this.tickTimeHistory.push(this.times.lastTick);
 
@@ -85,18 +111,26 @@ export class EngineDebugger {
     }
 
     onRenderStart() {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         this.timers.renderStart = performance.now();
     }
 
     onRenderEnd() {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         this.times.lastRender = performance.now() - this.timers.renderStart;
         this.renderTimeHistory.push(this.times.lastRender);
     }
 
     private drawGraphGrid(y: number, x: number, graphCount: number, height: number, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, graphSettings: Omit<Omit<GraphSettings, "position">, "size">) {
-        const graphSize = 0.15;
-        const offsetY = 0.01;
-        const offsetX = 0.002;
+        const graphSize = 0.16;
+        const offsetY = 0.001;
+        const offsetX = 0.0002;
 
         const settings = graphSettings as GraphSettings;
 
@@ -114,6 +148,10 @@ export class EngineDebugger {
     }
 
     renderDebug(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, state: State) {
+        if (this.debugDisabled()) {
+            return;
+        }
+
         let debugYPos = 0;
         ctx.save();
         ctx.fillStyle = "white";
@@ -121,15 +159,17 @@ export class EngineDebugger {
         ctx.fillText("= " + this.engine.name + " =", 10, debugYPos += 30);
         ctx.fillText("frame: " + state.frameIndex, 10, debugYPos += 30);
         ctx.fillText("tick : " + this.times.lastTick.toFixed(2) + "ms", 10, debugYPos += 30);
+        ctx.fillText("rlbc : " + this.times.lastRollback.toFixed(2) + "ms", 10, debugYPos += 30);
         ctx.fillText("rend : " + this.times.lastRender.toFixed(2) + "ms", 10, debugYPos += 30);
         ctx.fillText("lag  : " + this.engine.updateLag.toFixed(2) + "ms " + (this.engine.updateLag > this.engine.MS_PER_FRAME ? " (can't keep up!)" : ""), 10, debugYPos += 30);
         ctx.fillText("ctx  : " + this.engine.currentState.actionContext, 10, debugYPos += 30);
         ctx.fillText("acts : " + this.engine.currentState.actions.map(a => `${a.ownerId}:${a.type}`).join(", "), 10, debugYPos += 30);
+        ctx.fillText("sble : " + this.engine.rollback.stateBuffer.length, 10, debugYPos += 30);
 
         const actionCountGraph = {
             data: this.engine.rollback.stateBuffer.map(s => {
                 return {
-                    colors: s.actions.map(a => Graphics.colorFromText(a.context)),
+                    colors: s.actions.map(a => Graphics.colorFromText(a.context + a.ownerId.repeat(4))),
                     values: s.actions.map(_ => 1)
                 };
             }),
@@ -175,7 +215,7 @@ export class EngineDebugger {
                 topRight: { type: LabelType.maxValue },
                 bottomRight: { type: LabelType.end }
             },
-            crop: Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5)
+            crop: Graphics.cropEnd(this.rollbackCountPerFrame.length, 60 * 5)
         };
 
         const renderTimeGraph = {
@@ -238,14 +278,27 @@ export class EngineDebugger {
             crop: Graphics.cropEnd(this.updateCountHistory.length, 60 * 5)
         };
 
-        this.drawGraphGrid(0, 0, 1.5, 1, ctx, canvas, actionCountGraph);
-        this.drawGraphGrid(1, 0, 1.5, 1, ctx, canvas, rollBackGraph);
-        this.drawGraphGrid(2, 2, 3, 1, ctx, canvas, renderTimeGraph);
-        // this.drawGraphGrid(2, 0, 1.5, 1, ctx, canvas, tickTimeGraph);
-        this.drawGraphGrid(3, 2, 3, 1, ctx, canvas, tickTimeGraph);
-        this.drawGraphGrid(2, 0, 1.5, 1, ctx, canvas, stateBufferType);
-        this.drawGraphGrid(1, 2, 3, 1, ctx, canvas, lagOverTimeGraph);
-        this.drawGraphGrid(0, 2, 3, 1, ctx, canvas, tickCountGraph);
+        switch (this.debugLevel) {
+            case DebugMode.ALL_GRAPHS:
+                this.drawGraphGrid(0, 0, 1.5, 1, ctx, canvas, actionCountGraph);
+                this.drawGraphGrid(1, 0, 1.5, 1, ctx, canvas, rollBackGraph);
+                this.drawGraphGrid(2, 2, 3, 1, ctx, canvas, renderTimeGraph);
+                this.drawGraphGrid(3, 2, 3, 1, ctx, canvas, tickTimeGraph);
+                this.drawGraphGrid(2, 0, 1.5, 1, ctx, canvas, stateBufferType);
+                this.drawGraphGrid(1, 2, 3, 1, ctx, canvas, lagOverTimeGraph);
+                this.drawGraphGrid(0, 2, 3, 1, ctx, canvas, tickCountGraph);
+                break;
+            case DebugMode.ROLLBACK_SIMPLE:
+                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, actionCountGraph);
+                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, rollBackGraph);
+                break;
+            case DebugMode.ROLLBACK:
+                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, actionCountGraph);
+                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, rollBackGraph);
+                this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, stateBufferType);
+                break;
+        }
+
 
         ctx.restore();
     }
