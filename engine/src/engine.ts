@@ -210,6 +210,21 @@ export class Engine {
         this.currentState = this.rollback.recomputeStateSinceFrame(index);
     }
 
+    predictNextActions() {
+        if (this.debugger.noPrediction) {
+            return;
+        }
+
+        const predictions = this.network.predictions;
+        for (const playerId in predictions) {
+            for (const action of predictions[playerId].actions) {
+                if (playerId !== this.network.localId) {
+                    this.currentState.actions.push(action);
+                }
+            }
+        }
+    }
+
     /**
      * Create actions from inputs for current context for local player
      */
@@ -259,6 +274,7 @@ export class Engine {
 
             this.currentState.clearActions();
             this.setActionsFromInputs();
+            this.predictNextActions();
             this.rollback.saveStateToBuffer(this.currentState);
 
             this.tick(this.currentState);

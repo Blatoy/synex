@@ -20,6 +20,7 @@ export class EngineDebugger {
     private renderTimeHistory: number[] = [];
     private updateCountHistory: number[] = [];
 
+    noPrediction = false;
     debugLevel = DebugMode.ROLLBACK_SIMPLE;
 
     timers = {

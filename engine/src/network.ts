@@ -4,13 +4,17 @@ import { LocalAdapter } from "network-adapters/local/local-adapter.js";
 import { WSAdapter } from "network-adapters/ws-server/ws-adapter.js";
 import { NetworkAdapterInterface } from "network-adapters/network-interface.js";
 
+// frameIndex => {playerId, actions}
 type ActionQueue = Map<number, Record<string, Action[]>>;
+// playerId => {frameIndex, actions}
+type Predictions = Record<string, { lastFrameIndex: number, actions: Action[] }>;
 
 export class Network {
     private adapter: NetworkAdapterInterface;
     private _localId = "-1";
 
     private _actionQueue: ActionQueue = new Map();
+    private _predictions: Predictions = {};
     public packetSentThisFrame = false;
 
     constructor(private engine: Engine) {
@@ -42,6 +46,10 @@ export class Network {
         return this._actionQueue;
     }
 
+    public get predictions(): Predictions {
+        return this._predictions;
+    }
+
     private onRequestState(): string {
         return this.engine.serializeState();
     }
@@ -51,6 +59,11 @@ export class Network {
             this._actionQueue.set(frameIndex, {});
         }
 
+        if (!this._predictions[playerId]) {
+            this._predictions[playerId] = { actions: [], lastFrameIndex: 0};
+        }
+
+        const playerPredictions = this._predictions[playerId];
         const queueForIndex = this._actionQueue.get(frameIndex);
         if (queueForIndex) {
             if (!queueForIndex[playerId]) {
@@ -65,6 +78,11 @@ export class Network {
                 });
             }
 
+            if (frameIndex > playerPredictions.lastFrameIndex) {
+                playerPredictions.actions = queueForIndex[playerId];
+                playerPredictions.lastFrameIndex = frameIndex;
+            }
+        }
     }
 
     sendToAll(actions: string[], context: string, frameIndex: number) {
