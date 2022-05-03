@@ -32,4 +32,14 @@ export class EntitiesAPI implements Entities {
         }
         this.entitiesToBeSpawned = [];
     }
+
+    deleteMarkedEntities(entities: GenericEntity[]) {
+        for (let i = 0; i < entities.length; i++) {
+            const meta = entities[i].meta as MetaEntity;
+            if (meta.scheduledForDeletion) {
+                entities.splice(i, 1);
+                i--;
+            }
+        }
+    }
 }

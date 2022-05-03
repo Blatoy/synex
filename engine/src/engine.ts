@@ -131,6 +131,7 @@ export class Engine {
 
         // Add any created entity during this tick to the state
         this.entitiesAPI.spawnQueuedEntities(state.entities);
+        this.entitiesAPI.deleteMarkedEntities(state.entities);
 
         this.debugger.onTickEnd();
     }
