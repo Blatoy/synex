@@ -219,8 +219,8 @@ export class Engine {
 
         const predictions = this.network.predictions;
         for (const playerId in predictions) {
-            for (const action of predictions[playerId].actions) {
-                if (playerId !== this.network.localId) {
+            if (playerId !== this.network.localId) {
+                for (const action of predictions[playerId].actions) {
                     this.currentState.actions.push(action);
                 }
             }
