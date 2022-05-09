@@ -258,7 +258,7 @@ export class Engine {
         }
     }
 
-    gameLoop() {
+    gameLoop = () => {
         this.applyNetworkActions();
 
         // Based on https://gameprogrammingpatterns.com/game-loop.html
@@ -287,6 +287,6 @@ export class Engine {
         this.debugger.renderDebug(this.gameCanvas.ctx, this.gameCanvas.canvas, this.currentState);
         this.debugger.onGameLoopEnd(updateCount);
 
-        requestAnimationFrame(this.gameLoop.bind(this));
-    }
+        requestAnimationFrame(this.gameLoop);
+    };
 }
