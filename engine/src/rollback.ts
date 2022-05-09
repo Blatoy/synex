@@ -37,7 +37,7 @@ export class Rollback {
 
         // Were all received actions predicted?
         if (!receivedActions.every(newAction =>
-            predictedPlayerActions.every(predictedAction =>
+            predictedPlayerActions.some(predictedAction => 
                 this.actionsEqual(newAction, predictedAction)
             )
         )) {
