@@ -5,6 +5,7 @@ import { Graphics, GraphSettings, GraphType, LabelType } from "graphs.js";
 
 export enum DebugMode {
     DISABLED,
+    MINIMAL,
     ALL_GRAPHS,
     ROLLBACK,
     ROLLBACK_SIMPLE
@@ -19,6 +20,11 @@ export class EngineDebugger {
     private tickTimeHistory: number[] = [];
     private renderTimeHistory: number[] = [];
     private updateCountHistory: number[] = [];
+
+    lastFps = 0;
+    fps = 0;
+    lastUps = 0;
+    ups = 0;
 
     noPrediction = false;
     debugLevel = DebugMode.ROLLBACK_SIMPLE;
@@ -35,7 +41,14 @@ export class EngineDebugger {
         lastRollback: 0
     };
 
-    constructor(private engine: Engine) { }
+    constructor(private engine: Engine) {
+        setInterval(() => {
+            this.lastFps = this.fps;
+            this.lastUps = this.ups;
+            this.fps = 0;
+            this.ups = 0;
+        }, 1000);
+    }
 
     pause() {
         this._pauseLoop = true;
@@ -75,6 +88,12 @@ export class EngineDebugger {
             return;
         }
 
+        this.ups += updateCount;
+
+        if (this.debugLevel === DebugMode.MINIMAL) {
+            return;
+        }
+
         this.lagHistory.push(this.engine.updateLag);
         this.updateCountHistory.push(updateCount);
     }
@@ -105,6 +124,12 @@ export class EngineDebugger {
         }
 
         this.times.lastTick = performance.now() - this.timers.tickStart;
+
+        if (this.debugLevel === DebugMode.MINIMAL) {
+            return;
+        }
+
+
         this.tickTimeHistory.push(this.times.lastTick);
 
         if (this.stepByStep) {
@@ -141,6 +166,11 @@ export class EngineDebugger {
             return;
         }
 
+        this.fps++;
+        if (this.debugLevel === DebugMode.MINIMAL) {
+            return;
+        }
+
         this.times.lastRender = performance.now() - this.timers.renderStart;
         this.renderTimeHistory.push(this.times.lastRender);
     }
@@ -170,19 +200,24 @@ export class EngineDebugger {
             return;
         }
 
-        let debugYPos = 0;
-        ctx.save();
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, 32);
+
         ctx.fillStyle = "white";
-        ctx.font = "32px monospace";
-        ctx.fillText("= " + this.engine.name + " =", 10, debugYPos += 30);
-        ctx.fillText("frame: " + state.frameIndex, 10, debugYPos += 30);
-        ctx.fillText("tick : " + this.times.lastTick.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("rlbc : " + this.times.lastRollback.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("rend : " + this.times.lastRender.toFixed(2) + "ms", 10, debugYPos += 30);
-        ctx.fillText("lag  : " + this.engine.updateLag.toFixed(2) + "ms " + (this.engine.updateLag > this.engine.MS_PER_FRAME ? " (can't keep up!)" : ""), 10, debugYPos += 30);
-        ctx.fillText("ctx  : " + this.engine.currentState.actionContext, 10, debugYPos += 30);
-        ctx.fillText("acts : " + this.engine.currentState.actions.map(a => `${a.ownerId}:${a.type}`).join(", "), 10, debugYPos += 30);
-        ctx.fillText("sble : " + this.engine.rollback.stateBuffer.length, 10, debugYPos += 30);
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.font = "20px monospace";
+        ctx.fillText(
+            `fps: ${(this.lastFps).toFixed(0)} - ups: ${this.lastUps} - ` +
+            `uptime: ${(state.frameIndex / 60).toFixed(0)}s - tick: ${this.times.lastTick.toFixed(2)}ms - ` +
+            `render: ${this.times.lastRender.toFixed(2)}ms - rollback: ${this.times.lastRollback.toFixed(2)}ms - ` +
+            `update lag: ${this.engine.updateLag.toFixed(2).padStart(5, "0")}ms - ` +
+            `rollback buff size: ${this.engine.rollback.stateBuffer.length.toString().padStart(5, "0")}`
+            , 10, 7);
+
+        if (this.debugLevel === DebugMode.MINIMAL) {
+            return;
+        }
 
         const actionCountGraph = {
             data: this.engine.rollback.stateBuffer.map(s => {
@@ -316,8 +351,5 @@ export class EngineDebugger {
                 this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, stateBufferType);
                 break;
         }
-
-
-        ctx.restore();
     }
 }
