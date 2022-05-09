@@ -41,6 +41,7 @@ export const RenderAnimationSystem: System = {
 
                     ctx.scale(-1, 1);
                     ctx.translate(-entity.transform.position.x, 0);
+                    ctx.restore();
                 } else {
                     ctx.drawImage(image,
                         entity.animation.getSpriteOffset(), 0,
