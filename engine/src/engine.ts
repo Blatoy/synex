@@ -236,6 +236,7 @@ export class Engine {
 
         if (actions) {
             const actionsPerformed: string[] = [];
+            const localActionsPerformed: string[] = [];
             for (const actionType in actions) {
                 const action = actions[actionType];
                 const performingAction = action.keys.some(key => this.inputs.isHeld(key));
@@ -244,7 +245,12 @@ export class Engine {
                         clearKeys.push(...action.keys);
                     }
 
-                    actionsPerformed.push(actionType);
+                    // undefined => true
+                    if (action.synchronized === false) {
+                        localActionsPerformed.push(actionType);
+                    } else {
+                        actionsPerformed.push(actionType);
+                    }
                 }
             }
 
@@ -252,7 +258,7 @@ export class Engine {
                 this.inputs.clearHeld(key);
             }
 
-            this.network.sendToAll(actionsPerformed, this.currentState.actionContext, this.currentState.frameIndex);
+            this.network.sendToAll(actionsPerformed, localActionsPerformed, this.currentState.actionContext, this.currentState.frameIndex);
         } else {
             console.warn("Invalid action state: ", this.currentState.actionContext);
         }

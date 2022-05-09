@@ -36,7 +36,7 @@ export class Network {
     }
 
     onSceneLoaded(frameIndex: number) {
-        this.sendToAll(["sceneLoaded"], "network", frameIndex);
+        this.sendToAll(["sceneLoaded"], [], "network", frameIndex);
     }
 
     public get localId() {
@@ -91,7 +91,7 @@ export class Network {
         }
     }
 
-    sendToAll(actions: string[], context: string, frameIndex: number) {
+    sendToAll(actions: string[], localActions: string[], context: string, frameIndex: number) {
         if (this.packetSentThisFrame) {
             console.warn("Cannot use sendToAll twice per frame");
             return;
@@ -104,10 +104,20 @@ export class Network {
         if (context === "network") {
             this.onEventsReceived(actions, context, this.localId, frameIndex);
         } else {
+            // actions sent to other players
             for (let i = 0; i < actions.length; i++) {
                 this.engine.currentState.actions.push({
                     ownerId: this.localId,
                     type: actions[i],
+                    context: context
+                });
+            }
+
+            // actions not sent to other players
+            for (let i = 0; i < localActions.length; i++) {
+                this.engine.currentState.actions.push({
+                    ownerId: this.localId,
+                    type: localActions[i],
                     context: context
                 });
             }
