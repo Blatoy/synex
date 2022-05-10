@@ -40,7 +40,7 @@ export class Engine {
         this.inputs = new EngineInput();
         this.network = new Network(this);
         this.rollback = new Rollback(this);
-        this.actionsAPI = new ActionsAPI(this.currentState);
+        this.actionsAPI = new ActionsAPI(this.network, this.currentState);
         this.entitiesAPI = new EntitiesAPI();
         this.reloadGameTemplate();
     }
@@ -209,7 +209,14 @@ export class Engine {
     }
 
     rollbackFromFrame(index: number) {
+        // TODO: To make the game more fair:
+        // - if action was sent but then cancelled bc of rollback, send a "cancel" info
+        // - if action was not sent but the could be done bc of rollback, send it
+        // the following case will make sure an action is not lost because of rollback but fairness has to be check manually
+        // additionally if it could technically be performed because of rollback it will also be ignored (though this could be desired)
+        this.network.ignoreEventBroadcast = true;
         this.currentState = this.rollback.recomputeStateSinceFrame(index);
+        this.network.ignoreEventBroadcast = false;
     }
 
     predictNextActions() {

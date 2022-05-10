@@ -1,4 +1,5 @@
 import { NetworkAdapterInterface } from "network-adapters/network-interface.js";
+import { NetworkAction } from "network.js";
 
 
 // A similar class to this one should connect to a server and handle all messages and stuff 
@@ -10,7 +11,7 @@ export class WSAdapter extends NetworkAdapterInterface {
     constructor(
         requestFrameIndexHandler: () => number,
         requestStateHandler: () => string,
-        eventHandler: (actions: string[], context: string, playerId: string, frameIndex: number) => void) {
+        eventHandler: (actions: NetworkAction[], context: string, playerId: string, frameIndex: number) => void) {
         super(requestFrameIndexHandler, requestStateHandler, eventHandler);
         // TODO: Add timeout server side to avoid player never disconnecting
         window.addEventListener("beforeunload", () => {

@@ -1,3 +1,5 @@
+import { NetworkAction } from "network.js";
+
 export abstract class NetworkAdapterInterface {
     constructor(
         public requestFrameIndexHandler: () => number,
@@ -25,5 +27,5 @@ export abstract class NetworkAdapterInterface {
      * @param context 
      * @param frameIndex 
      */
-    abstract broadcastAction(actions: string[], context: string, frameIndex: number): void
+    abstract broadcastAction(actions: NetworkAction[], context: string, frameIndex: number): void
 }

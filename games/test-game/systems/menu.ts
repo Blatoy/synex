@@ -4,6 +4,8 @@ import { Menu } from "test-game/components/menu.js";
 import { Owner } from "test-game/components/owner.js";
 import { Entity } from "test-game/metadata.js";
 
+type RGB = { r: number, g: number, b: number };
+
 export const MenuSystem: System = {
     requiredComponents: [Menu, Owner],
     updateAll(entity: Entity) {
@@ -25,12 +27,26 @@ export const MenuSystem: System = {
         if (playerActions["menu:left"]) {
             entity.menu.index--;
         }
+
+        if (playerActions["menu:set_color"]) {
+            const color = playerActions["menu:set_color"].data as RGB;
+            const c = new Color(color.r, color.g, color.b, 0.8);
+
+            entity.debug.fillColor = c;
+            entity.debug.strokeColor = c;
+        }
+
         if (playerActions["menu:enter"]) {
             switch (entity.menu.index) {
                 case 0: {
-                    const c = new Color(entity.transform.position.x % 255, entity.transform.position.y % 255, entity.transform.position.x % 255, 0.8);
-                    entity.debug.fillColor = c;
-                    entity.debug.strokeColor = c;
+
+                    const color: RGB = {
+                        r: entity.transform.position.x % 255,
+                        g: entity.transform.position.y % 255,
+                        b: entity.transform.position.x % 255
+                    };
+
+                    this.actions.broadcast("set_color", color);
                 } break;
                 case 1: {
                     (window as any).engines[0].replayIndex = 0;

@@ -9,16 +9,21 @@ type ActionQueue = Map<number, Record<string, Action[]>>;
 // playerId => {frameIndex, actions}
 type Predictions = Record<string, { lastFrameIndex: number, actions: Action[] }>;
 
+export type NetworkAction = { type: string, data?: unknown } | string;
+
 export class Network {
     private adapter: NetworkAdapterInterface;
     private _localId = "-1";
 
+    // TODO: clear action/input confusion naming
+    private manualActionQueue: { type: string, data: unknown }[] = [];
     private _actionQueue: ActionQueue = new Map();
     private _predictions: Predictions = {};
     public packetSentThisFrame = false;
+    public ignoreEventBroadcast = false;
 
     constructor(private engine: Engine) {
-        this.adapter = new WSAdapter(
+        this.adapter = new LocalAdapter(
             this.onRequestFrameIndex.bind(this),
             this.onRequestState.bind(this),
             this.onEventsReceived.bind(this)
@@ -37,6 +42,12 @@ export class Network {
 
     onSceneLoaded(frameIndex: number) {
         this.sendToAll(["sceneLoaded"], [], "network", frameIndex);
+    }
+
+    addManualAction(type: string, data: unknown) {
+        if (!this.ignoreEventBroadcast) {
+            this.manualActionQueue.push({ type, data });
+        }
     }
 
     public get localId() {
@@ -60,13 +71,13 @@ export class Network {
         return this.engine.currentState.frameIndex;
     }
 
-    private onEventsReceived(actions: string[], context: string, playerId: string, frameIndex: number): void {
+    private onEventsReceived(actions: NetworkAction[], context: string, playerId: string, frameIndex: number): void {
         if (!this._actionQueue.has(frameIndex)) {
             this._actionQueue.set(frameIndex, {});
         }
 
         if (!this._predictions[playerId]) {
-            this._predictions[playerId] = { actions: [], lastFrameIndex: 0};
+            this._predictions[playerId] = { actions: [], lastFrameIndex: 0 };
         }
 
         const playerPredictions = this._predictions[playerId];
@@ -77,8 +88,16 @@ export class Network {
             }
 
             for (let i = 0; i < actions.length; i++) {
+                let action = actions[i];
+                if (typeof action === "string") {
+                    action = {
+                        type: action
+                    };
+                }
+
                 this._actionQueue.get(frameIndex)?.[playerId].push({
-                    type: actions[i],
+                    type: action.type,
+                    data: action.data,
                     ownerId: playerId,
                     context: context
                 });
@@ -91,13 +110,22 @@ export class Network {
         }
     }
 
-    sendToAll(actions: string[], localActions: string[], context: string, frameIndex: number) {
+    sendToAll(actions: NetworkAction[], localActions: string[], context: string, frameIndex: number) {
         if (this.packetSentThisFrame) {
             console.warn("Cannot use sendToAll twice per frame");
             return;
         }
 
         this.packetSentThisFrame = true;
+
+        for (const event of this.manualActionQueue) {
+            actions.push({
+                type: event.type,
+                data: event.data
+            });
+        }
+
+        this.manualActionQueue = [];
 
         // TODO: this is a hack as otherwise loadScene is called too early and ignored
         // this is probably an issue that should be fixed
@@ -106,9 +134,17 @@ export class Network {
         } else {
             // actions sent to other players
             for (let i = 0; i < actions.length; i++) {
+                let action = actions[i];
+                if (typeof action === "string") {
+                    action = {
+                        type: action
+                    };
+                }
+
                 this.engine.currentState.actions.push({
                     ownerId: this.localId,
-                    type: actions[i],
+                    type: action.type,
+                    data: action.data,
                     context: context
                 });
             }

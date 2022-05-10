@@ -1,8 +1,10 @@
+import { Engine } from "engine.js";
 import { State } from "frame-state.js";
 import { Action, Actions } from "game-lib/types/game-api/action.js";
+import { Network } from "network.js";
 
 export class ActionsAPI implements Actions {
-    constructor(private _state: State) { }
+    constructor(private network: Network, private _state: State) { }
 
     /**
      * @param ownerId unique id owning the component
@@ -33,6 +35,10 @@ export class ActionsAPI implements Actions {
      */
     setContext(context: string): void {
         this.state.actionContext = context;
+    }
+
+    broadcast(type: string, value?: unknown) {
+        this.network.addManualAction(type, value);
     }
 
     get state() {
