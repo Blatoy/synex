@@ -8,7 +8,7 @@ import { ActionsAPI } from "game-api/actions-api.js";
 import { EngineInput } from "engine-input.js";
 import { Rollback } from "rollback.js";
 import { EntitiesAPI } from "game-api/entities-api.js";
-import { Network } from "network.js";
+import { Network, NetworkAction } from "network.js";
 
 export class Engine {
     readonly TARGET_UPS = 60;
@@ -37,7 +37,7 @@ export class Engine {
     ) {
         this.gameCanvas = new GameCanvas(canvasContainer);
         this.debugger = new EngineDebugger(this);
-        this.inputs = new EngineInput();
+        this.inputs = new EngineInput(this.gameCanvas.canvas);
         this.network = new Network(this);
         this.rollback = new Rollback(this);
         this.actionsAPI = new ActionsAPI(this.network, this.currentState);
@@ -242,21 +242,33 @@ export class Engine {
         const clearKeys = [];
 
         if (actions) {
-            const actionsPerformed: string[] = [];
-            const localActionsPerformed: string[] = [];
+            const actionsPerformed: NetworkAction[] = [];
+            const localActionsPerformed: NetworkAction[] = [];
             for (const actionType in actions) {
                 const action = actions[actionType];
-                const performingAction = action.keys.some(key => this.inputs.isHeld(key));
+                const performingAction = this.inputs.performingAction(action);
+
                 if (performingAction) {
+                    // TODO: fireOnce should not clear keys as 2 actions could technically share the same key
+                    // TODO: fireOnce could be used instead of mouseClick? Maybe could have keysPressed and keysHeld instead?
                     if (action.fireOnce) {
                         clearKeys.push(...action.keys);
                     }
 
+                    let networkAction: NetworkAction = actionType;
+
+                    if (this.inputs.isMouseAction(action)) {
+                        networkAction = {
+                            type: actionType,
+                            data: this.inputs.getMousePos()
+                        };
+                    }
+
                     // undefined => true
                     if (action.synchronized === false) {
-                        localActionsPerformed.push(actionType);
+                        localActionsPerformed.push(networkAction);
                     } else {
-                        actionsPerformed.push(actionType);
+                        actionsPerformed.push(networkAction);
                     }
                 }
             }
@@ -294,6 +306,8 @@ export class Engine {
 
             this.tick(this.currentState);
             this.updateLag -= this.MS_PER_FRAME;
+
+            this.inputs.onFrameEnd();
         }
 
         this.render(this.currentState);

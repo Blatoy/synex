@@ -2,6 +2,7 @@ import { Scene } from "./scene.js";
 import { System } from "./system.js";
 import { Component } from "./component.js";
 import { Key } from "utils/keycode.js";
+import { Mouse } from "utils/mouse.js";
 
 /**
  * Contains all the data required to load a game and additional information
@@ -21,6 +22,10 @@ export type ActionContexts = {
 
 export type ActionDefinition = {
     keys: Key[],
+    mouseClick?: Mouse[],
+    mouseDown?: Mouse[],
+    mouseUp?: Mouse[],
+    mouseMove?: boolean,
     synchronized?: boolean
     fireOnce?: boolean
 }

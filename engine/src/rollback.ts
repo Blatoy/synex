@@ -4,7 +4,9 @@ import { Action } from "game-lib/types/game-api/action.js";
 
 export class Rollback {
     stateBuffer: State[] = [];
+    frameCountOffset = 0;
     readonly FULL_SNAPSHOT_EVERY_FRAME_COUNT = 60;
+    readonly STATE_BUFFER_MAX_LENGTH = 60 * 30; // 30s state buffer
 
     constructor(private engine: Engine) { }
 
@@ -14,6 +16,11 @@ export class Rollback {
         } else {
             this.stateBuffer.push(state.cloneActions());
         }
+
+        // TODO: Don't allow state buffer to grow infinitely
+        /* while (this.stateBuffer.length > this.STATE_BUFFER_MAX_LENGTH) {
+            this.stateBuffer.shift();
+        } */
     }
 
     onLateJoin(state: State) {
@@ -24,10 +31,9 @@ export class Rollback {
         this.stateBuffer.push(state.clone());
     }
 
-    // TODO: This WILL go wrong if multiple actions share the same type and context but
-    // different data at the same frame
     private actionsEqual(action1: Action, action2: Action) {
-        return action1.context === action2.context && action1.type === action2.type;
+        // NOTE: The data compare is wrong! It will return true only if both are undefined at the moment (which is not 100% wrong but still not perfect)
+        return action1.context === action2.context && action1.type === action2.type && action1.data === action2.data; 
     }
 
     predictedStateBufferMatchActual(predictedPlayerActions: Action[], receivedActions: Action[]) {

@@ -110,7 +110,7 @@ export class Network {
         }
     }
 
-    sendToAll(actions: NetworkAction[], localActions: string[], context: string, frameIndex: number) {
+    sendToAll(actions: NetworkAction[], localActions: NetworkAction[], context: string, frameIndex: number) {
         if (this.packetSentThisFrame) {
             console.warn("Cannot use sendToAll twice per frame");
             return;
@@ -132,6 +132,7 @@ export class Network {
         if (context === "network") {
             this.onEventsReceived(actions, context, this.localId, frameIndex);
         } else {
+            // TODO: Cleanup these 2 for as they are almost the same
             // actions sent to other players
             for (let i = 0; i < actions.length; i++) {
                 let action = actions[i];
@@ -151,9 +152,17 @@ export class Network {
 
             // actions not sent to other players
             for (let i = 0; i < localActions.length; i++) {
+                let action = localActions[i];
+                if (typeof action === "string") {
+                    action = {
+                        type: action
+                    };
+                }
+
                 this.engine.currentState.actions.push({
                     ownerId: this.localId,
-                    type: localActions[i],
+                    type: action.type,
+                    data: action.data,
                     context: context
                 });
             }
