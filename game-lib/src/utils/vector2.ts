@@ -22,4 +22,8 @@ export class Vector2 {
     manhattanDistanceTo(other: Vector2) {
         return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
     }
+
+    toString() {
+        return `(${this.x}, ${this.y})`;
+    }
 }
