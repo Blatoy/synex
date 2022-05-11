@@ -20,6 +20,10 @@ export class ActionsAPI implements Actions {
         return actions;
     }
 
+    ofLocalPlayer(): { [key: string]: Action; } {
+        return this.ofPlayer(this.network.localId);
+    }
+
     /**
      * @param context 
      * @param type 
@@ -48,9 +52,4 @@ export class ActionsAPI implements Actions {
     set state(state: State) {
         this._state = state;
     }
-
-    get local() {
-        return {};
-    }
-
 }
