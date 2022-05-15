@@ -11,6 +11,8 @@ import { Key } from "game-lib/utils/keycode.js";
 import { Owner } from "./components/owner.js";
 import { Menu } from "./components/menu.js";
 import { Spawner } from "./components/spawner.js";
+import { Mouse } from "game-lib/utils/mouse.js";
+import { DemoSelected } from "./components/demo-selected.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -26,13 +28,16 @@ const components = {
     bounce: Bounce,
     owner: Owner,
     menu: Menu,
-    spawner: Spawner
+    spawner: Spawner,
+    demoSelected: DemoSelected
 };
 
 export const gameDefinition: GameMetadata = {
     systems: await importSystems(
         "velocity",
         "render-debug",
+        "demo-update",
+        "demo-render",
         "player-spawner",
         "force",
         "bounce",
@@ -45,6 +50,8 @@ export const gameDefinition: GameMetadata = {
     ],
     actions: {
         "default": {
+            "debug_select": { keys: [Key.ControlLeft], mouseClick: [Mouse.left], synchronized: false },
+            "teleport_player": { keys: [Key.ControlLeft], mouseDown: [Mouse.middle] },
             "move_up": { keys: [Key.W, Key.ArrowUp] },
             "move_down": { keys: [Key.S, Key.ArrowDown] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },

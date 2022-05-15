@@ -20,6 +20,8 @@ import { Lifetime } from "./components/lifetime.js";
 import { Damage } from "./components/damage.js";
 import { Explode } from "./components/explode.js";
 import { Health } from "./components/health.js";
+import { DemoSelected } from "./components/demo-selected.js";
+import { Mouse } from "game-lib/utils/mouse.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -39,7 +41,8 @@ const components = {
     lifetime: Lifetime,
     damage: Damage,
     explode: Explode,
-    health: Health
+    health: Health,
+    demoSelected: DemoSelected
 };
 
 export const gameDefinition: GameMetadata = {
@@ -61,6 +64,8 @@ export const gameDefinition: GameMetadata = {
         "parent",
         "render-animations",
         "render-debug",
+        "demo-update",
+        "demo-render",
     ),
     components: components,
     scenes: [
@@ -68,6 +73,7 @@ export const gameDefinition: GameMetadata = {
     ],
     actions: {
         "default": {
+            "debug_select": { keys: [Key.ControlLeft], mouseClick: [Mouse.left]},
             "move_up": { keys: [Key.W, Key.ArrowUp] },
             "move_down": { keys: [Key.S, Key.ArrowDown] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },

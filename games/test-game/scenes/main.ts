@@ -5,6 +5,7 @@ import { Transform } from "test-game/components/transform.js";
 import { Velocity } from "test-game/components/velocity.js";
 import { Bounce } from "test-game/components/bounce.js";
 import { Spawner } from "test-game/components/spawner.js";
+import { DemoSelected } from "test-game/components/demo-selected.js";
 
 const main: Scene = {
     metadata: {
@@ -15,7 +16,7 @@ const main: Scene = {
 };
 
 
-for (let i = 0; i < 500; i++) {
+for (let i = 0; i < 50; i++) {
     const x = i % 32;
     const y = i / 32;
 
@@ -30,6 +31,9 @@ for (let i = 0; i < 500; i++) {
                     valuesOverride: {
                         position: { x: x * 1920 / 32, y: y * 1080 / 32 }
                     }
+                },
+                {
+                    Type: DemoSelected
                 },
                 {
                     Type: Velocity,
@@ -66,6 +70,9 @@ for (let i = 0; i < 500; i++) {
                     valuesOverride: {
                         position: { x: x * 1920 / 32, y: y * 1080 / 32 }
                     }
+                },
+                {
+                    Type: DemoSelected
                 },
                 {
                     Type: Velocity,
@@ -114,6 +121,9 @@ main.entities.push({
     components: [
         {
             Type: Spawner
+        },
+        {
+            Type: DemoSelected
         },
         {
             Type: Transform,

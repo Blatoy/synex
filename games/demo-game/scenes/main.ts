@@ -3,6 +3,7 @@ import { Debug } from "../components/debug.js";
 import { Transform } from "../components/transform.js";
 import { Spawner } from "../components/spawner.js";
 import { MagneticField } from "demo-game/components/magnetic-field.js";
+import { DemoSelected } from "demo-game/components/demo-selected.js";
 
 const main: Scene = {
     metadata: {
@@ -19,6 +20,7 @@ main.entities.push({
         {
             Type: Spawner
         },
+        { Type: DemoSelected },
         {
             Type: Transform,
             valuesOverride: {

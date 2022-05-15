@@ -12,6 +12,7 @@ import { Debug } from "demo-game/components/debug.js";
 import { Parent } from "demo-game/components/parent.js";
 import { Parented } from "demo-game/components/parented.js";
 import { Health } from "demo-game/components/health.js";
+import { DemoSelected } from "demo-game/components/demo-selected.js";
 
 export const PlayerSpawner: System = {
     requiredComponents: [Spawner, Transform],
@@ -23,6 +24,7 @@ export const PlayerSpawner: System = {
         for (const action of joinActions.concat(respawnActions)) {
             this.entities.spawn("Player " + action.ownerId,
                 { Type: Health },
+                { Type: DemoSelected },
                 { Type: Parent, valuesOverride: { id: "player" + action.ownerId } },
                 { Type: Velocity }, { Type: Animation }, { Type: Magnetic },
                 { Type: Owner, valuesOverride: { id: action.ownerId } },
@@ -60,7 +62,8 @@ export const PlayerSpawner: System = {
             );
         }
         for (const action of joinActions) {
-            this.entities.spawn(
+            this.entities.spawn("Player " + action.ownerId,
+                { Type: DemoSelected },
                 { Type: Parented, valuesOverride: { parentId: "player" + action.ownerId, offsetY: -250 } },
                 { Type: Owner, valuesOverride: { id: action.ownerId } },
                 {

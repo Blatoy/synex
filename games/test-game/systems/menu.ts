@@ -1,5 +1,6 @@
 import { System } from "game-lib/types/system.js";
 import { Color } from "game-lib/utils/color.js";
+import { MousePosition } from "game-lib/utils/mouse.js";
 import { Menu } from "test-game/components/menu.js";
 import { Owner } from "test-game/components/owner.js";
 import { Entity } from "test-game/metadata.js";
@@ -26,6 +27,12 @@ export const MenuSystem: System = {
         }
         if (playerActions["menu:left"]) {
             entity.menu.index--;
+        }
+        if (playerActions["default:teleport_player"]) {
+            const mousePos = playerActions["default:teleport_player"].data as MousePosition;
+
+            entity.transform.position.x = mousePos.x;
+            entity.transform.position.y = mousePos.y;
         }
 
         if (playerActions["menu:set_color"]) {

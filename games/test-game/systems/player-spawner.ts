@@ -1,6 +1,7 @@
 import { System } from "game-lib/types/system.js";
 import { Bounce } from "test-game/components/bounce.js";
 import { Debug } from "test-game/components/debug.js";
+import { DemoSelected } from "test-game/components/demo-selected.js";
 import { Menu } from "test-game/components/menu.js";
 import { Owner } from "test-game/components/owner.js";
 import { Spawner } from "test-game/components/spawner.js";
@@ -16,9 +17,10 @@ export const PlayerSpawner: System = {
 
 
         for (const action of joinActions) {
-            this.entities.spawn(
+            this.entities.spawn("Player " + action.ownerId,
                 { Type: Owner, valuesOverride: { id: action.ownerId } },
                 { Type: Menu },
+                { Type: DemoSelected },
                 { Type: Velocity },
                 {
                     Type: Transform,

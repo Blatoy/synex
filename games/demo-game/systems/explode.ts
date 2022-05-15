@@ -6,6 +6,7 @@ import { Explode } from "demo-game/components/explode.js";
 import { Damage } from "demo-game/components/damage.js";
 import { Transform } from "demo-game/components/transform.js";
 import { Debug } from "demo-game/components/debug.js";
+import { DemoSelected } from "demo-game/components/demo-selected.js";
 
 export const MagneticFieldSystem: System = {
     requiredComponents: [Transform, Lifetime, Explode],
@@ -22,6 +23,7 @@ export const MagneticFieldSystem: System = {
                         timeLeft: 60 * 0.2
                     }
                 },
+                { Type: DemoSelected },
                 { Type: Damage },
                 {
                     Type: Transform,

@@ -9,14 +9,16 @@ import { Debug } from "demo-game/components/debug.js";
 import { Magnetic } from "demo-game/components/magnetic.js";
 import { Velocity } from "demo-game/components/velocity.js";
 import { Explode } from "demo-game/components/explode.js";
+import { DemoSelected } from "demo-game/components/demo-selected.js";
 
 export const SpawnItemSystem: System = {
     requiredComponents: [Owner, Transform, Parent],
     updateAll(entity: Entity) {
         const playerActions = this.actions.ofPlayer(entity.owner.id);
         if (playerActions["default:spawn_bomb"]) {
-            this.entities.spawn("Player " + action.ownerId,
+            this.entities.spawn("Player " + playerActions.ownerId,
                 { Type: Magnetic },
+                { Type: DemoSelected },
                 { 
                     Type: Explode,
                     valuesOverride: {
