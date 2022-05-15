@@ -1,0 +1,31 @@
+import { Debug } from "game-lib/base-components/debug.js";
+import { Transform } from "game-lib/base-components/transform.js";
+import { System } from "game-lib/types/system.js";
+import { MousePosition } from "game-lib/utils/mouse.js";
+import { Entity } from "magnet-bros/metadata.js";
+
+
+export const UpdateDebug: System = {
+    requiredComponents: [Transform, Debug],
+    update(entities: Entity[]) {
+        const playerActions = this.actions.ofLocalPlayer();
+
+        if (playerActions["default:debug_select"]) {
+            const mousePos = playerActions["default:debug_select"].data as MousePosition;
+
+            let anySelected = false;
+            for (const entity of entities) {
+                // Reset status of all
+                entity.debug.strokeRect = false;
+                entity.debug.showDetail = false;
+
+                if (!anySelected && entity.transform.containsPoint(mousePos.x, mousePos.y)) {
+                    anySelected = true;
+                    entity.debug.strokeRect = true;
+                    entity.debug.showDetail = true;
+                }
+
+            }
+        }
+    }
+};
