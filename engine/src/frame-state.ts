@@ -67,6 +67,16 @@ export class State {
 
             // For each components of the entity, set back their value
             for (const componentClass of entity.meta.components) {
+                if (!componentClass) {
+                    console.warn("Entity named '" + entity.meta.name + "' contains an invalid component. Component list: [", entity.meta.components.map((c, i) => {
+                        if (c) {
+                            return c.componentName;
+                        } else {
+                            return "(invalid, index = " + i + ")";
+                        }
+                    }).join(", "), "]. Is the component include in metadata.ts? Does the component exists where the entity is created?");
+                    continue;
+                }
                 const component = new componentClass();
                 entity[componentClass.componentName] = component;
                 for (const key in savedEntity[componentClass.componentName]) {

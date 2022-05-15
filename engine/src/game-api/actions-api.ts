@@ -1,4 +1,3 @@
-import { Engine } from "engine.js";
 import { State } from "frame-state.js";
 import { Action, Actions } from "game-lib/types/game-api/action.js";
 import { Network } from "network.js";

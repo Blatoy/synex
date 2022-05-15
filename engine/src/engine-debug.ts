@@ -209,10 +209,11 @@ export class EngineDebugger {
         ctx.font = "20px monospace";
         ctx.fillText(
             `fps: ${(this.lastFps).toFixed(0)} - ups: ${this.lastUps} - ` +
+            `entity count: ${this.engine.currentState.entities.length.toString().padStart(4, " ")} - ` +
             `uptime: ${(state.frameIndex / 60).toFixed(0)}s - tick: ${this.times.lastTick.toFixed(2)}ms - ` +
             `render: ${this.times.lastRender.toFixed(2)}ms - rollback: ${this.times.lastRollback.toFixed(2)}ms - ` +
             `update lag: ${this.engine.updateLag.toFixed(2).padStart(5, "0")}ms - ` +
-            `rollback buff size: ${this.engine.rollback.stateBuffer.length.toString().padStart(5, "0")}`
+            `rollback buff size: ${this.engine.rollback.stateBuffer.length.toString().padStart(5, " ")}`
             , 10, 7);
 
         if (this.debugLevel === DebugMode.MINIMAL) {
