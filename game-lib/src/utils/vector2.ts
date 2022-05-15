@@ -23,6 +23,26 @@ export class Vector2 {
         return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
     }
 
+    add(other: Vector2) {
+        this.x += other.x;
+        this.y += other.y;
+    }
+
+    capMax(maxValues: Vector2) {
+        this.x = Math.min(this.x, maxValues.x);
+        this.y = Math.min(this.y, maxValues.y);
+    }
+
+    capMin(minValues: Vector2) {
+        this.x = Math.max(this.x, minValues.x);
+        this.y = Math.max(this.y, minValues.y);
+    }
+
+    mulElementWise(other: Vector2) {
+        this.x *= other.x;
+        this.y *= other.y;
+    }
+
     toString() {
         return `(${this.x}, ${this.y})`;
     }
