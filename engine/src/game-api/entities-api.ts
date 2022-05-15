@@ -6,7 +6,7 @@ import { MetaEntity } from "meta-entity.js";
 
 export class EntitiesAPI implements Entities {
     private entitiesToBeSpawned: GenericEntity[] = [];
-    spawn(...components: SerializedComponent[]): void {
+    spawn(name: string, ...components: SerializedComponent[]): void {
         // TODO: Should this emit a global action?
         // ^ No if it's something deterministic (e.g. timed spawner, hitbox or something)
         // ^ Yes if it's done by something local (local spawn menu)
@@ -14,7 +14,7 @@ export class EntitiesAPI implements Entities {
         // TODO: Do not duplicate the code from game-template, add a function somewhere
         const entity: GenericEntity = {
             meta: new MetaEntity(
-                "(spawned)",
+                name,
                 components.map(serializedComponent => serializedComponent.Type)
             )
         };

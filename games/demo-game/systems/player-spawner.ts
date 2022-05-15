@@ -21,7 +21,7 @@ export const PlayerSpawner: System = {
 
 
         for (const action of joinActions.concat(respawnActions)) {
-            this.entities.spawn(
+            this.entities.spawn("Player " + action.ownerId,
                 { Type: Health },
                 { Type: Parent, valuesOverride: { id: "player" + action.ownerId } },
                 { Type: Velocity }, { Type: Animation }, { Type: Magnetic },

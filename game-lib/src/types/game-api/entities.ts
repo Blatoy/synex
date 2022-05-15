@@ -1,5 +1,5 @@
-import { Component } from "types/component.js";
+import { Component, SerializedComponent } from "types/component.js";
 
 export type Entities = {
-    spawn(...components: Component[]): void
+    spawn(name: string, ...components: SerializedComponent[]): void
 }

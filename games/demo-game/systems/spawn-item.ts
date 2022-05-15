@@ -15,7 +15,7 @@ export const SpawnItemSystem: System = {
     updateAll(entity: Entity) {
         const playerActions = this.actions.ofPlayer(entity.owner.id);
         if (playerActions["default:spawn_bomb"]) {
-            this.entities.spawn(
+            this.entities.spawn("Player " + action.ownerId,
                 { Type: Magnetic },
                 { 
                     Type: Explode,

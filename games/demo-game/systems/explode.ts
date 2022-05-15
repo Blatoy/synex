@@ -15,7 +15,7 @@ export const MagneticFieldSystem: System = {
             const cx = entity.transform.position.x + entity.transform.size.x / 2;
             const cy = entity.transform.position.y + entity.transform.size.y / 2;
 
-            this.entities.spawn(
+            this.entities.spawn("Spawned bomb",
                 { 
                     Type: Lifetime,
                     valuesOverride: {
