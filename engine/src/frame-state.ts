@@ -54,7 +54,7 @@ export class State {
     static deserialize(state: string, gameTemplate: GameTemplate) {
         const entities: GenericEntity[] = [];
         const deserialized: SerializedState = JSON.parse(state);
-        const savedEntities: SerializedEntity[] = deserialized.entities; // TODO: Correct typing
+        const savedEntities: SerializedEntity[] = deserialized.entities;
 
         for (const savedEntity of savedEntities) {
             // Create entity

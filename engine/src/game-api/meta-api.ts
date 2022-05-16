@@ -51,7 +51,7 @@ export class MetaAPI implements Meta {
         return this.engine.currentState.frameIndex;
     }
 
-    log(...args: any[]): void {
+    log(...args: unknown[]): void {
         console.log(
             `[${this.engine.name}]`,
             (this.engine.debugger.inRollback ? `(${this.engine.debugger.currentRollbackFrame}/` : "(") +

@@ -26,7 +26,7 @@ export class SystemManager {
                     console.warn(`System systems/${systemFiles[i]}.ts could not be loaded for the following reason:`);
                     console.error(e);
                 }));
-                
+
                 return [];
             }
         };

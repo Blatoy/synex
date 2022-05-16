@@ -31,8 +31,8 @@ export class Network {
     }
 
     async connect(ip: string, port: number) {
-        const connectionData = await this.adapter.connect(ip, port);
         // TODO: Handle failure
+        const connectionData = await this.adapter.connect(ip, port);
         this._localId = connectionData.playerId;
     }
 

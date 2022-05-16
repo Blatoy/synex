@@ -199,15 +199,12 @@ export class Engine {
                     }
                 }
 
-                // TODO: Prediction could be done here
                 actions.delete(frameIndex);
             }
         }
 
         if (earliestFrame !== Infinity) {
-            // TODO: Prevent sending events again while rollback
             // TODO: Game dev must double check that events are valid
-            // TODO: Visualize rollback
             this.debugger.onRollbackStart();
             this.rollbackFromFrame(earliestFrame);
             this.debugger.onRollbackEnd();
@@ -215,7 +212,7 @@ export class Engine {
     }
 
     rollbackFromFrame(index: number) {
-        // TODO: To make the game more fair:
+        // To make the game more fair:
         // - if action was sent but then cancelled bc of rollback, send a "cancel" info
         // - if action was not sent but the could be done bc of rollback, send it
         // the following case will make sure an action is not lost because of rollback but fairness has to be check manually

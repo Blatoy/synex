@@ -6,21 +6,16 @@ export class Rollback {
     stateBuffer: State[] = [];
     frameCountOffset = 0;
     readonly FULL_SNAPSHOT_EVERY_FRAME_COUNT = 60;
-    readonly STATE_BUFFER_MAX_LENGTH = 60 * 30; // 30s state buffer
 
     constructor(private engine: Engine) { }
 
     saveStateToBuffer(state: State) {
+        // TODO: Don't allow state buffer to grow infinitely
         if (state.frameIndex % this.FULL_SNAPSHOT_EVERY_FRAME_COUNT === 0) {
             this.stateBuffer.push(state.clone());
         } else {
             this.stateBuffer.push(state.cloneActions());
         }
-
-        // TODO: Don't allow state buffer to grow infinitely
-        /* while (this.stateBuffer.length > this.STATE_BUFFER_MAX_LENGTH) {
-            this.stateBuffer.shift();
-        } */
     }
 
     /**
@@ -38,7 +33,7 @@ export class Rollback {
 
     private actionsEqual(action1: Action, action2: Action) {
         // NOTE: The data compare is wrong! It will return true only if both are undefined at the moment (which is not 100% wrong but still not perfect)
-        return action1.context === action2.context && action1.type === action2.type && action1.data === action2.data; 
+        return action1.context === action2.context && action1.type === action2.type && action1.data === action2.data;
     }
 
     predictedStateBufferMatchActual(predictedPlayerActions: Action[], receivedActions: Action[]) {
@@ -48,7 +43,7 @@ export class Rollback {
 
         // Were all received actions predicted?
         if (!receivedActions.every(newAction =>
-            predictedPlayerActions.some(predictedAction => 
+            predictedPlayerActions.some(predictedAction =>
                 this.actionsEqual(newAction, predictedAction)
             )
         )) {
@@ -67,8 +62,6 @@ export class Rollback {
         return true;
     }
 
-    // TODO: this should work with a full frame
-    // e.g: P1 sends [a, b], frame buffer had [a, b, c] => mismatch! => fix
     updateStateBuffer(frameIndex: number, playerId: string, receivedActions: Action[]): boolean {
         if (frameIndex < this.stateBuffer.length) {
             const predictedActions = this.stateBuffer[frameIndex].actions;

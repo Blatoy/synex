@@ -23,7 +23,7 @@ export class Color {
     }
 
     set r(val: number) {
-        this._r = val; 
+        this._r = val;
         this.recomputeStrings();
     }
     set g(val: number) {
@@ -31,7 +31,7 @@ export class Color {
         this.recomputeStrings();
     }
     set b(val: number) {
-        this._b = val; 
+        this._b = val;
         this.recomputeStrings();
     }
     set a(val: number) {

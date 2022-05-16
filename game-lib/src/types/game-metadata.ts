@@ -17,8 +17,8 @@ export type GameMetadata = {
 }
 
 export type ActionContexts = {
-    "default": {[key: string]: ActionDefinition},
-    [key: string]: {[key: string]: ActionDefinition}
+    "default": { [key: string]: ActionDefinition },
+    [key: string]: { [key: string]: ActionDefinition }
 }
 
 export type ActionDefinition = {

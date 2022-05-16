@@ -6,5 +6,5 @@ export type Meta = {
     gameDefinition: GameMetadata
     instanceName: string
     currentFrameIndex: number
-    log(...args: any[]): void
+    log(...args: unknown[]): void
 }
