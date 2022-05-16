@@ -30,6 +30,8 @@ export class Engine {
     entitiesAPI: EntitiesAPI;
     metaAPI: MetaAPI;
 
+    justJoinedScene = false;
+
     gameCanvas;
 
     constructor(
@@ -83,7 +85,7 @@ export class Engine {
         }
 
         if (connected) {
-            this.network.onSceneLoaded(this.currentState.frameIndex);
+            this.justJoinedScene = true;
             this.gameLoop();
         }
     }
@@ -234,7 +236,10 @@ export class Engine {
         for (const playerId in predictions) {
             if (playerId !== this.network.localId) {
                 for (const action of predictions[playerId].actions) {
-                    this.currentState.actions.push(action);
+                    // Don't predict networking events
+                    if (action.context !== "network") {
+                        this.currentState.actions.push(action);
+                    }
                 }
             }
         }
@@ -246,6 +251,12 @@ export class Engine {
     setActionsFromInputs() {
         const actions = this.gameTemplate.gameMetadata.actions[this.currentState.actionContext];
         const clearKeys = [];
+
+        if (this.justJoinedScene) {
+            this.network.onSceneLoaded(this.currentState.frameIndex);
+            this.justJoinedScene = false;
+            return;
+        }
 
         if (actions) {
             const actionsPerformed: NetworkAction[] = [];

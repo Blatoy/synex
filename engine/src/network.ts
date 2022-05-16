@@ -127,45 +127,39 @@ export class Network {
 
         this.manualActionQueue = [];
 
-        // TODO: this is a hack as otherwise loadScene is called too early and ignored
-        // this is probably an issue that should be fixed
-        if (context === "network") {
-            this.onEventsReceived(actions, context, this.localId, frameIndex);
-        } else {
-            // TODO: Cleanup these 2 for as they are almost the same
-            // actions sent to other players
-            for (let i = 0; i < actions.length; i++) {
-                let action = actions[i];
-                if (typeof action === "string") {
-                    action = {
-                        type: action
-                    };
-                }
-
-                this.engine.currentState.actions.push({
-                    ownerId: this.localId,
-                    type: action.type,
-                    data: action.data,
-                    context: context
-                });
+        // TODO: Cleanup these 2 for as they are almost the same
+        // actions sent to other players
+        for (let i = 0; i < actions.length; i++) {
+            let action = actions[i];
+            if (typeof action === "string") {
+                action = {
+                    type: action
+                };
             }
 
-            // actions not sent to other players
-            for (let i = 0; i < localActions.length; i++) {
-                let action = localActions[i];
-                if (typeof action === "string") {
-                    action = {
-                        type: action
-                    };
-                }
+            this.engine.currentState.actions.push({
+                ownerId: this.localId,
+                type: action.type,
+                data: action.data,
+                context: context
+            });
+        }
 
-                this.engine.currentState.actions.push({
-                    ownerId: this.localId,
-                    type: action.type,
-                    data: action.data,
-                    context: context
-                });
+        // actions not sent to other players
+        for (let i = 0; i < localActions.length; i++) {
+            let action = localActions[i];
+            if (typeof action === "string") {
+                action = {
+                    type: action
+                };
             }
+
+            this.engine.currentState.actions.push({
+                ownerId: this.localId,
+                type: action.type,
+                data: action.data,
+                context: context
+            });
         }
         this.adapter.broadcastAction(actions, context, frameIndex);
     }
