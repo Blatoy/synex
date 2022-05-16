@@ -2,7 +2,7 @@ import { Engine } from "engine/engine.js";
 import { GameTemplate } from "engine/game-template.js";
 
 const engines: Engine[] = [];
-const gameTemplate = new GameTemplate("/scripts/games/demo-game");
+const gameTemplate = new GameTemplate("/scripts/games/magnet-bros");
 
 window.addEventListener("load", async () => {
 
@@ -15,8 +15,10 @@ window.addEventListener("load", async () => {
 
     engines.forEach((engine) => {
         engine.gameCanvas.canvas.addEventListener("click", () => {
-            engines.forEach((engine) => {
-                engine.inputs.ignoreInputs = true;
+            engines.forEach((e) => {
+                if (e !== engine) {
+                    e.inputs.ignoreInputs = true;
+                }
             });
             engine.inputs.ignoreInputs = false;
         });
