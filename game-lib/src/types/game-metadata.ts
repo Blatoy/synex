@@ -9,6 +9,7 @@ import { Mouse } from "utils/mouse.js";
  */
 export type GameMetadata = {
     systems: System[];
+    systemNames: string[]; // This is only required as we want to showcase ECS
     components: { [key: string]: typeof Component };
     scenes: Scene[]
     version: string;

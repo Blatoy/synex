@@ -9,6 +9,7 @@ import { EngineInput } from "engine-input.js";
 import { Rollback } from "rollback.js";
 import { EntitiesAPI } from "game-api/entities-api.js";
 import { Network, NetworkAction } from "network.js";
+import { MetaAPI } from "game-api/meta-api.js";
 
 export class Engine {
     readonly TARGET_UPS = 60;
@@ -27,12 +28,13 @@ export class Engine {
     rollback: Rollback;
     actionsAPI: ActionsAPI;
     entitiesAPI: EntitiesAPI;
+    metaAPI: MetaAPI;
 
     gameCanvas;
 
     constructor(
         public name: string,
-        private gameTemplate: GameTemplate,
+        public gameTemplate: GameTemplate,
         canvasContainer: HTMLElement
     ) {
         this.gameCanvas = new GameCanvas(canvasContainer);
@@ -42,6 +44,7 @@ export class Engine {
         this.rollback = new Rollback(this);
         this.actionsAPI = new ActionsAPI(this.network, this.currentState);
         this.entitiesAPI = new EntitiesAPI();
+        this.metaAPI = new MetaAPI(this);
         this.reloadGameTemplate();
     }
 
@@ -173,7 +176,8 @@ export class Engine {
         this.actionsAPI.state = state;
         return {
             actions: this.actionsAPI,
-            entities: this.entitiesAPI
+            entities: this.entitiesAPI,
+            meta: this.metaAPI
         };
     }
 

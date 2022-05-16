@@ -35,7 +35,26 @@ export const DemoRender: System = {
                     let y = 5;
                     // name
                     ctx.font = "30px monospace";
-                    ctx.fillText("= " + entity.meta.name + " =", 15, y += 30);
+                    ctx.fillStyle = entity.debug.fillColor.toString();
+                    ctx.fillText(entity.meta.name, 15, y += 40);
+
+                    ctx.font = "25px monospace";
+                    ctx.fillStyle = "white";
+
+                    y += 10;
+
+                    // System handling this entity
+                    let systems = this.meta.systemsHandlingEntity(entity.meta);
+                    systems = systems.filter((name) => !name.includes("update-debug") && !name.includes("render-debug"));
+                    for (let i = 0; i < systems.length; i += 4) {
+                        if (i === 0) {
+                            ctx.fillText("Handled by: ", 15, y += 30);
+                            y += 5;
+                        }
+
+                        ctx.fillStyle = "rgb(210, 210, 210)";
+                        ctx.fillText("  " + systems.slice(i, i + 4).join(", "), 15, y += 30);
+                    }
 
                     // Components
                     for (const componentName in entity) {

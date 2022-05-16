@@ -44,6 +44,7 @@ export const gameDefinition: GameMetadata = {
         "move",
         "menu"
     ),
+    systemNames: [],
     components: components,
     scenes: [
         main

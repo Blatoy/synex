@@ -37,19 +37,22 @@ const components = {
     sprite: Sprite
 };
 
+const systemFiles = [
+    "update-debug",
+    "respawn",
+    "death-detection",
+    "spawner",
+    "player-movement",
+    "movement",
+    "acceleration",
+    "velocity",
+    "collider",
+    "render-debug"
+];
+
 export const gameDefinition: GameMetadata = {
-    systems: await importSystems(
-        "update-debug",
-        "respawn",
-        "death-detection",
-        "spawner",
-        "player-movement",
-        "movement",
-        "acceleration",
-        "velocity",
-        "collider",
-        "render-debug"
-    ),
+    systems: await importSystems(...systemFiles),
+    systemNames: systemFiles,
     components: components,
     scenes: [
         main

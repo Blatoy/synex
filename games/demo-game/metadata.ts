@@ -67,6 +67,7 @@ export const gameDefinition: GameMetadata = {
         "demo-update",
         "demo-render",
     ),
+    systemNames: [],
     components: components,
     scenes: [
         main
