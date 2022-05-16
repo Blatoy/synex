@@ -26,6 +26,9 @@ export class EngineDebugger {
     lastUps = 0;
     ups = 0;
 
+    currentRollbackFrame = 0;
+    inRollback = false;
+
     noPrediction = false;
     debugLevel = DebugMode.ROLLBACK_SIMPLE;
 

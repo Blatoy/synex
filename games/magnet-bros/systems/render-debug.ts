@@ -15,6 +15,12 @@ export const DemoRender: System = {
                 ctx.fillRect(pos.x, pos.y, size.x, size.y);
             }
 
+            if (entity.debug.showName) {
+                ctx.textAlign = "center";
+                ctx.fillStyle = entity.debug.fillColor.toString();
+                ctx.fillText(entity.meta.name, pos.x + size.x / 2, pos.y);
+            }
+
             if (entity.debug.strokeRect) {
                 ctx.lineWidth = 4;
                 ctx.strokeStyle = entity.debug.strokeColor.toString();
@@ -26,17 +32,19 @@ export const DemoRender: System = {
         const anySelected = detailedEntities.some(e => e.debug.showDetail);
         if (anySelected) {
             // Background
+            ctx.textAlign = "left";
             ctx.fillStyle = "rgb(0, 0, 0, 0.2)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.fillStyle = "white";
-            for (const entity of detailedEntities) {
+            for (let i = 0; i < detailedEntities.length; i++) {
+                const entity = detailedEntities[i];
                 if (entity.debug.showDetail) {
                     let y = 5 - entity.debug.detailScroll * 5;
                     // name
                     ctx.font = "30px monospace";
                     ctx.fillStyle = entity.debug.fillColor.toString();
-                    ctx.fillText(entity.meta.name, 15, y += 40);
+                    ctx.fillText(`#${i} ${entity.meta.name}`, 15, y += 40);
 
                     ctx.font = "25px monospace";
                     ctx.fillStyle = "white";

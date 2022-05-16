@@ -113,6 +113,7 @@ export class Rollback {
 
         // Apply tick until buffer is empty
         for (let i = index; i < this.stateBuffer.length; i++) {
+            this.engine.debugger.currentRollbackFrame = i;
             this.setActionsFromBuffer(restoredState, i);
             this.engine.tick(restoredState);
         }

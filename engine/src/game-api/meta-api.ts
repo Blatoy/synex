@@ -42,4 +42,19 @@ export class MetaAPI implements Meta {
     get gameDefinition(): GameMetadata {
         return this.engine.gameTemplate.gameMetadata;
     }
+
+    get instanceName(): string {
+        return this.engine.name;
+    }
+
+    get currentFrameIndex(): number {
+        return this.engine.currentState.frameIndex;
+    }
+
+    log(...args: any[]): void {
+        console.log(
+            `[${this.engine.name}]`,
+            (this.engine.debugger.inRollback ? `(${this.engine.debugger.currentRollbackFrame}/` : "(") +
+            `${this.currentFrameIndex})`, ...args);
+    }
 }

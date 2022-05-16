@@ -218,9 +218,11 @@ export class Engine {
         // - if action was not sent but the could be done bc of rollback, send it
         // the following case will make sure an action is not lost because of rollback but fairness has to be check manually
         // additionally if it could technically be performed because of rollback it will also be ignored (though this could be desired)
+        this.debugger.inRollback = true;
         this.network.ignoreEventBroadcast = true;
         this.currentState = this.rollback.recomputeStateSinceFrame(index);
         this.network.ignoreEventBroadcast = false;
+        this.debugger.inRollback = false;
     }
 
     predictNextActions() {
