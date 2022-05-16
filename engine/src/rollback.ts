@@ -93,6 +93,8 @@ export class Rollback {
             console.warn("Attempting to rollback in the future");
         }
 
+        this.engine.debugger.onRollbackBegin();
+
         // Find full snapshot
         let fullSnapshot = this.stateBuffer[index];
         while (fullSnapshot.onlyActions) {
@@ -115,6 +117,7 @@ export class Rollback {
         for (let i = index; i < this.stateBuffer.length; i++) {
             this.engine.debugger.currentRollbackFrame = i;
             this.setActionsFromBuffer(restoredState, i);
+            this.engine.debugger.onRollbackTick(restoredState);
             this.engine.tick(restoredState);
         }
 

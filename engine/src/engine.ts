@@ -327,8 +327,13 @@ export class Engine {
             this.inputs.onFrameEnd();
         }
 
-        this.render(this.currentState);
-        this.debugger.renderDebug(this.gameCanvas.ctx, this.gameCanvas.canvas, this.currentState);
+        let state = this.currentState;
+        if (this.debugger.overrideRenderedState) {
+            state = this.debugger.overrideRenderedState;
+        }
+
+        this.render(state);
+        this.debugger.renderDebug(this.gameCanvas.ctx, this.gameCanvas.canvas, state);
         this.debugger.onGameLoopEnd(updateCount);
 
         requestAnimationFrame(this.gameLoop);

@@ -20,6 +20,7 @@ export class EngineDebugger {
     private tickTimeHistory: number[] = [];
     private renderTimeHistory: number[] = [];
     private updateCountHistory: number[] = [];
+    private rollbackReplays: State[][] = [];
 
     lastFps = 0;
     fps = 0;
@@ -44,6 +45,9 @@ export class EngineDebugger {
         lastRollback: 0
     };
 
+    overrideRenderedState: State | undefined;
+    rollbackReplayIndex = 0;
+
     constructor(private engine: Engine) {
         setInterval(() => {
             this.lastFps = this.fps;
@@ -51,6 +55,53 @@ export class EngineDebugger {
             this.fps = 0;
             this.ups = 0;
         }, 1000);
+    }
+
+    onRollbackBegin() {
+        this.rollbackReplays.push([]);
+    }
+
+    onRollbackTick(state: State) {
+        if (this.debugDisabled() || this.debugLevel == DebugMode.MINIMAL) {
+            return;
+        }
+
+        this.rollbackReplays[this.rollbackReplays.length - 1].push(state.clone());
+    }
+
+    showRollback(index: number) {
+        this.rollbackReplayIndex = index;
+        this.overrideRenderedState = this.rollbackReplays[index][0];
+    }
+
+    previousRollbackFrame() {
+        const replay = this.rollbackReplays[this.rollbackReplayIndex];
+        let index = replay.indexOf(this.overrideRenderedState as State);
+
+        if (index <= 0) {
+            console.log("Restarting replay");
+            index = replay.length - 1;
+        } else {
+            index--;
+        }
+
+        console.log("Replaying, current frame: ", index, "/", replay.length - 1);
+        this.overrideRenderedState = replay[index];
+    }
+
+    nextRollbackFrame() {
+        const replay = this.rollbackReplays[this.rollbackReplayIndex];
+        let index = replay.indexOf(this.overrideRenderedState as State);
+
+        if (index >= replay.length - 1) {
+            console.log("Restarting replay");
+            index = 0;
+        } else {
+            index++;
+        }
+
+        console.log("Replaying, current frame: ", index, "/", replay.length - 1);
+        this.overrideRenderedState = replay[index];
     }
 
     pause() {
@@ -212,7 +263,7 @@ export class EngineDebugger {
         ctx.font = "20px monospace";
         ctx.fillText(
             `fps: ${(this.lastFps).toFixed(0)} - ups: ${this.lastUps} - ` +
-            `entity count: ${this.engine.currentState.entities.length.toString().padStart(4, " ")} - ` +
+            `entity count: ${state.entities.length.toString().padStart(4, " ")} - ` +
             `uptime: ${(state.frameIndex / 60).toFixed(0)}s - tick: ${this.times.lastTick.toFixed(2)}ms - ` +
             `render: ${this.times.lastRender.toFixed(2)}ms - rollback: ${this.times.lastRollback.toFixed(2)}ms - ` +
             `update lag: ${this.engine.updateLag.toFixed(2).padStart(5, "0")}ms - ` +
@@ -223,6 +274,20 @@ export class EngineDebugger {
             return;
         }
 
+        let stateCrop = Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5);
+        let rollbackCrop = Graphics.cropEnd(this.rollbackCountPerFrame.length + 1, 60 * 5);
+
+        if (this.overrideRenderedState) {
+            stateCrop = {
+                start: Math.max(0, this.overrideRenderedState.frameIndex - 10),
+                end: this.overrideRenderedState.frameIndex
+            };
+
+            rollbackCrop = {
+                start: Math.max(0, this.overrideRenderedState.frameIndex - 10),
+                end: this.overrideRenderedState.frameIndex
+            };
+        }
         const actionCountGraph = {
             data: this.engine.rollback.stateBuffer.map(s => {
                 return {
@@ -239,7 +304,7 @@ export class EngineDebugger {
                 bottomLeft: { type: LabelType.start },
                 bottomRight: { type: LabelType.end }
             },
-            crop: Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5)
+            crop: stateCrop
         };
 
         const stateBufferType = {
@@ -258,7 +323,7 @@ export class EngineDebugger {
                 bottomLeft: { type: LabelType.start },
                 bottomRight: { type: LabelType.end }
             },
-            crop: Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5)
+            crop: stateCrop
         };
 
         const rollBackGraph = {
@@ -272,7 +337,7 @@ export class EngineDebugger {
                 topRight: { type: LabelType.maxValue },
                 bottomRight: { type: LabelType.end }
             },
-            crop: Graphics.cropEnd(this.rollbackCountPerFrame.length, 60 * 5)
+            crop: rollbackCrop
         };
 
         const renderTimeGraph = {
