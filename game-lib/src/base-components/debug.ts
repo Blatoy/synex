@@ -7,6 +7,7 @@ export class Debug extends Component {
     strokeColor = new Color(255, 0, 0, 1);
     strokeRect = false;
 
+    detailScroll = 0;
     showDetail = false;
     showName = false;
 }

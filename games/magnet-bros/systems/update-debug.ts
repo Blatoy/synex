@@ -27,5 +27,15 @@ export const UpdateDebug: System = {
 
             }
         }
+
+        for (const entity of entities) {
+            if (entity.debug.showDetail) {
+                if (playerActions["default:debug_scroll_down"]) {
+                    entity.debug.detailScroll++;
+                } else if (playerActions["default:debug_scroll_up"]) {
+                    entity.debug.detailScroll--;
+                }
+            }
+        }
     }
 };

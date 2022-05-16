@@ -61,7 +61,16 @@ export const gameDefinition: GameMetadata = {
         "default": {
             "debug_select": {
                 mouseClick: [Mouse.left],
-                keys: [Key.ControlLeft]
+                keys: [Key.ControlLeft],
+                synchronized: false
+            },
+            "debug_scroll_down": {
+                keys: [Key.Period],
+                synchronized: false
+            },
+            "debug_scroll_up": {
+                keys: [Key.Comma],
+                synchronized: false
             },
             "jump": { keys: [Key.W, Key.ArrowUp] },
             "drop_down": { keys: [Key.S, Key.ArrowDown] },
