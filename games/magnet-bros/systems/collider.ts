@@ -19,7 +19,8 @@ export const ColliderSystem: System = {
                 const rightBox = { x: pos.x + size.x / 2, y: pos.y, w: size.x / 2, h: size.y };
 
                 // Ground
-                if (body.transform.position.y < pos.y && body.velocity.linear.y > 0 &&
+                if (body.transform.position.y + body.transform.size.y / 2 < pos.y && body.velocity.linear.y > 0 &&
+                    (!body.rigidBody.fallThrough || collider.boxCollider.collisions.bottom) &&
                     collider.boxCollider.collisions.top && transformIntersectBox(body.transform, topBox)) {
                     body.rigidBody.grounded = true;
                     body.velocity.linear.y *= -collider.boxCollider.bounciness;

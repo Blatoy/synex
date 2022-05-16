@@ -18,6 +18,8 @@ import { RigidBody } from "./components/rigibody.js";
 import { Owner } from "game-lib/base-components/owner.js";
 import { Movement } from "./components/movement.js";
 import { RespawnTimer } from "./components/respawn-timer.js";
+import { Magnetic } from "./components/magnetic.js";
+import { RadialMagneticField } from "./components/radial-magnetic-field.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -34,7 +36,9 @@ const components = {
     spawner: Spawner,
     movement: Movement,
     respawnTimer: RespawnTimer,
-    sprite: Sprite
+    sprite: Sprite,
+    magnetic: Magnetic,
+    radialField: RadialMagneticField
 };
 
 const systemFiles = [
@@ -44,9 +48,11 @@ const systemFiles = [
     "spawner",
     "player-movement",
     "movement",
+    "magnets",
     "acceleration",
     "velocity",
     "collider",
+    "render-debug-magnets",
     "render-debug"
 ];
 
@@ -72,8 +78,9 @@ export const gameDefinition: GameMetadata = {
                 keys: [Key.Comma],
                 synchronized: false
             },
-            "jump": { keys: [Key.W, Key.ArrowUp] },
-            "drop_down": { keys: [Key.S, Key.ArrowDown] },
+            "jump": { keys: [Key.W, Key.ArrowUp, Key.Space] },
+            "move_down": { keys: [Key.S, Key.ArrowDown] },
+            "drop_down": { keys: [Key.Space] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },
             "move_right": { keys: [Key.D, Key.ArrowRight] }
         }

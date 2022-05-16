@@ -10,6 +10,10 @@ export const PlayerMovementSystem: System = {
 
         entity.movement.movingRight = playerActions["default:move_right"] ? true : false;
         entity.movement.movingLeft = playerActions["default:move_left"] ? true : false;
-        entity.movement.jumping = playerActions["default:jump"] ? true : false;
+        entity.movement.movingDown = playerActions["default:move_down"] ? true : false;
+        entity.movement.jumping = (playerActions["default:jump"] ? true : false)
+            && (playerActions["default:move_down"] ? false : true);
+        entity.movement.fallThrough = (playerActions["default:move_down"] ? true : false)
+            && (playerActions["default:drop_down"] ? true : false);
     }
 };

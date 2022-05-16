@@ -56,6 +56,10 @@ export const DemoRender: System = {
                         ctx.fillText("  " + systems.slice(i, i + 4).join(", "), 15, y += 30);
                     }
 
+                    y += 50;
+                    ctx.fillStyle = "white";
+                    ctx.fillText("Components: ", 15, y + 10);
+
                     // Components
                     for (const componentName in entity) {
                         const component = entity[componentName] as Component;
@@ -66,8 +70,9 @@ export const DemoRender: System = {
                         }
 
                         ctx.font = "25px monospace";
-                        ctx.fillStyle = "rgb(255, 255, 255)";
-                        ctx.fillText(componentName, 15, y += 50);
+                        ctx.fillStyle = "rgb(250, 250, 250)";
+
+                        ctx.fillText("  " + componentName, 15, y += 50);
 
                         // Component values
                         ctx.font = "22px monospace";
@@ -79,7 +84,7 @@ export const DemoRender: System = {
                                 value = JSON.stringify(component[key]);
                             }
 
-                            ctx.fillText("  " + key.padEnd(25) + value, 15, y += 35);
+                            ctx.fillText("   " + key.padEnd(25) + value, 15, y += 35);
                         }
                     }
                 }

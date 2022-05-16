@@ -34,6 +34,9 @@ export const UpdateDebug: System = {
                     entity.debug.detailScroll++;
                 } else if (playerActions["default:debug_scroll_up"]) {
                     entity.debug.detailScroll--;
+                    if (entity.debug.detailScroll < 0) {
+                        entity.debug.detailScroll = 0;
+                    }
                 }
             }
         }

@@ -12,6 +12,8 @@ import { RigidBody } from "magnet-bros/components/rigibody.js";
 import { Movement } from "magnet-bros/components/movement.js";
 
 import { RespawnTimer } from "magnet-bros/components/respawn-timer.js";
+import { Magnetic } from "magnet-bros/components/magnetic.js";
+import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 
 export const SpawnerSystem: System = {
     requiredComponents: [[Spawner, Transform], [Owner, RespawnTimer]],
@@ -40,6 +42,12 @@ export const SpawnerSystem: System = {
                         this.entities.spawn("Player " + ownerId,
                             {
                                 Type: RigidBody
+                            },
+                            {
+                                Type: Magnetic
+                            },
+                            {
+                                Type: RadialMagneticField
                             },
                             {
                                 Type: RespawnTimer,

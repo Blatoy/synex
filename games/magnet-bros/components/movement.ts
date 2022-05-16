@@ -8,5 +8,7 @@ export class Movement extends Component {
 
     movingLeft = false;
     movingRight = false;
+    movingDown = false;
     jumping = false;
+    fallThrough = false;
 }
