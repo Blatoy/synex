@@ -85,7 +85,7 @@ export class Engine {
         }
 
         if (connected) {
-            this.justJoinedScene = true;
+            this.network.onSceneLoaded(this.currentState.frameIndex);
             this.gameLoop();
         }
     }
@@ -251,12 +251,6 @@ export class Engine {
     setActionsFromInputs() {
         const actions = this.gameTemplate.gameMetadata.actions[this.currentState.actionContext];
         const clearKeys = [];
-
-        if (this.justJoinedScene) {
-            this.network.onSceneLoaded(this.currentState.frameIndex);
-            this.justJoinedScene = false;
-            return;
-        }
 
         if (actions) {
             const actionsPerformed: NetworkAction[] = [];

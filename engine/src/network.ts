@@ -41,6 +41,12 @@ export class Network {
     }
 
     onSceneLoaded(frameIndex: number) {
+        // This line is important
+        // Sending to all *does* append to the action buffer
+        // But since onSceneLoaded is called before the game loop
+        // The action buffer is cleared instantly
+        // This ensures the join event is handled locally on the next frame too
+        this.onEventsReceived(["sceneLoaded"], "network", this.localId, frameIndex);
         this.sendToAll(["sceneLoaded"], [], "network", frameIndex);
     }
 
