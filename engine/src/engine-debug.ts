@@ -62,7 +62,7 @@ export class EngineDebugger {
     }
 
     onRollbackTick(state: State) {
-        if (this.debugDisabled() || this.debugLevel == DebugMode.MINIMAL) {
+        if (this.debugDisabled() || this.debugLevel === DebugMode.MINIMAL) {
             return;
         }
 
@@ -129,7 +129,7 @@ export class EngineDebugger {
     onLateJoin(state: State) {
         this.rollbackCountPerFrame = [];
         for (let i = 0; i < state.frameIndex; i++) {
-            this.rollbackCountPerFrame.push(-1); // -1 => cannot rollback
+            this.rollbackCountPerFrame.push(0);
         }
     }
 
@@ -230,7 +230,7 @@ export class EngineDebugger {
     }
 
     private drawGraphGrid(y: number, x: number, graphCount: number, height: number, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, graphSettings: Omit<Omit<GraphSettings, "position">, "size">) {
-        const graphSize = 0.16;
+        const graphSize = 0.14;
         const offsetY = 0.001;
         const offsetX = 0.0002;
 

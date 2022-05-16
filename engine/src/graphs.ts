@@ -179,13 +179,13 @@ export class Graphics {
         switch (settings.type) {
             case GraphType.bars: {
                 for (let i = start; i < end; i++) {
-                    const data = settings.data[i];
+                    const data = settings.data[i] || 0;
                     const x = gx + this.indexToX(i, start, count, gw);
 
                     if (typeof data === "number") {
                         const y = gy + this.valueToY(data, max, gh);
                         const height = this.valueToHeight(data, max, gh);
-                        ctx.fillRect(x, y, width, height);
+                        ctx.fillRect(x, y, width - 4, height);
                     } else {
                         let cumSum = 0;
                         for (let j = 0; j < data.values.length; j++) {
@@ -193,7 +193,7 @@ export class Graphics {
                             const y = gy + this.valueToY(cumSum, max, gh);
                             const height = this.valueToHeight(data.values[j], max, gh);
                             ctx.fillStyle = data.colors[j];
-                            ctx.fillRect(x, y, width, height);
+                            ctx.fillRect(x, y, width - 4, height - 2);
                         }
                     }
                 }
@@ -202,7 +202,7 @@ export class Graphics {
             case GraphType.lines: {
                 ctx.beginPath();
                 for (let i = start; i < end; i++) {
-                    const data = settings.data[i];
+                    const data = settings.data[i] || 0;
                     const x = gx + this.indexToX(i, start, count, gw);
 
                     if (typeof data === "number") {
