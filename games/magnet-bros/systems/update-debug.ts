@@ -16,10 +16,11 @@ export const UpdateDebug: System = {
             let anySelected = false;
             for (const entity of entities) {
                 // Reset status of all
+                const wasSelected = entity.debug.showDetail;
                 entity.debug.strokeRect = false;
                 entity.debug.showDetail = false;
 
-                if (!anySelected && entity.transform.containsPoint(mousePos.x, mousePos.y)) {
+                if (!wasSelected && !anySelected && entity.transform.containsPoint(mousePos.x, mousePos.y)) {
                     anySelected = true;
                     entity.debug.strokeRect = true;
                     entity.debug.showDetail = true;

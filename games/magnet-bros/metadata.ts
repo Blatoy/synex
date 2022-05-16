@@ -52,6 +52,7 @@ const systemFiles = [
     "acceleration",
     "velocity",
     "collider",
+    "render-sprites",
     "render-debug-magnets",
     "render-debug"
 ];

@@ -3,6 +3,7 @@ import { Transform } from "game-lib/base-components/transform.js";
 import { Scene } from "game-lib/types/scene.js";
 import { BoxCollider } from "magnet-bros/components/box-collider.js";
 import { Spawner } from "magnet-bros/components/spawner.js";
+import { Sprite } from "magnet-bros/components/sprite.js";
 
 const main: Scene = {
     metadata: {
@@ -14,10 +15,54 @@ const main: Scene = {
 const GAME_WIDTH = 1920;
 const GAME_HEIGHT = 1080;
 
-const groundBaseComponents = [
-    { Type: Debug }
+const glassBaseComponents = [
+    {
+        Type: Debug,
+        valuesOverride: {
+            fillRect: false
+        } as Debug
+    },
+    {
+        Type: Sprite,
+        valuesOverride: {
+            sheetURL: "./magnet-bros/platform.png",
+            name: "platform",
+            width: 500,
+            height: 200,
+        } as Sprite
+    }
 ];
 
+
+main.entities.push({
+    metadata: {
+        name: "Background"
+    },
+    components: [
+        {
+            Type: Sprite,
+            valuesOverride: {
+                sheetURL: "./magnet-bros/background.png",
+                name: "background",
+                width: 1920,
+                height: 1080,
+            } as Sprite
+        },
+        {
+            Type: Debug,
+            valuesOverride: {
+                fillRect: false
+            } as Debug
+        },
+        {
+            Type: Transform,
+            valuesOverride: {
+                position: { x: 0, y: 0 },
+                size: { x: GAME_WIDTH, y: GAME_HEIGHT }
+            }
+        }
+    ]
+});
 
 main.entities.push({
     metadata: {
@@ -46,13 +91,26 @@ main.entities.push({
         name: "Main ground"
     },
     components: [
-        ...groundBaseComponents,
+        {
+            Type: Debug,
+            valuesOverride: {
+            } as Debug
+        },
+        {
+            Type: Sprite,
+            valuesOverride: {
+                sheetURL: "./magnet-bros/platform.png",
+                name: "platform",
+                width: 500,
+                height: 200,
+            } as Sprite
+        },
         { Type: BoxCollider },
         {
             Type: Transform,
             valuesOverride: {
                 position: { x: GAME_WIDTH * 0.2, y: GAME_HEIGHT * 0.7 },
-                size: { x: GAME_WIDTH * 0.6, y: GAME_HEIGHT * 0.1 }
+                size: { x: GAME_WIDTH * 0.6, y: GAME_HEIGHT * 0.2 }
             }
         }
     ]
@@ -63,7 +121,7 @@ main.entities.push({
         name: "Left platform"
     },
     components: [
-        ...groundBaseComponents,
+        ...glassBaseComponents,
         {
             Type: BoxCollider,
             valuesOverride: {
@@ -74,7 +132,7 @@ main.entities.push({
             Type: Transform,
             valuesOverride: {
                 position: { x: GAME_WIDTH * 0.25, y: GAME_HEIGHT * 0.47 },
-                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.02 }
+                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.06 }
             }
         }
     ]
@@ -83,7 +141,7 @@ main.entities.push({
 main.entities.push({
     metadata: { name: "Right platform" },
     components: [
-        ...groundBaseComponents,
+        ...glassBaseComponents,
         {
             Type: BoxCollider,
             valuesOverride: {
@@ -94,7 +152,7 @@ main.entities.push({
             Type: Transform,
             valuesOverride: {
                 position: { x: GAME_WIDTH * (0.75 - 0.12), y: GAME_HEIGHT * 0.47 },
-                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.02 }
+                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.06 }
             }
         }
     ]
@@ -103,7 +161,7 @@ main.entities.push({
 main.entities.push({
     metadata: { name: "Center platform" },
     components: [
-        ...groundBaseComponents,
+        ...glassBaseComponents,
         {
             Type: BoxCollider,
             valuesOverride: {
@@ -114,7 +172,7 @@ main.entities.push({
             Type: Transform,
             valuesOverride: {
                 position: { x: GAME_WIDTH * (0.5 - 0.06), y: GAME_HEIGHT * 0.3 },
-                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.02 }
+                size: { x: GAME_WIDTH * 0.12, y: GAME_HEIGHT * 0.06 }
             }
         }
     ]

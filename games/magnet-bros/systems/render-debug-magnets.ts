@@ -1,6 +1,4 @@
-import { Debug } from "game-lib/base-components/debug.js";
 import { Transform } from "game-lib/base-components/transform.js";
-import { Component } from "game-lib/types/component.js";
 import { System } from "game-lib/types/system.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Entity } from "magnet-bros/metadata.js";
