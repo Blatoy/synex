@@ -11,6 +11,7 @@ export const AccelerationSystem: System = {
         entity.velocity.linear.capMax(entity.velocity.maxLinear);
         entity.velocity.linear.capMin(entity.velocity.minLinear);
         entity.velocity.linear.mulElementWise(entity.acceleration.linearFriction);
+        entity.velocity.uncappedLinear.mulElementWise(entity.acceleration.linearFriction);
 
         // Angular
         entity.velocity.angular += entity.velocity.angular;

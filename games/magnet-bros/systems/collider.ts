@@ -24,6 +24,7 @@ export const ColliderSystem: System = {
                     collider.boxCollider.collisions.top && transformIntersectBox(body.transform, topBox)) {
                     body.rigidBody.grounded = true;
                     body.velocity.linear.y *= -collider.boxCollider.bounciness;
+                    body.velocity.uncappedLinear.y *= -collider.boxCollider.bounciness;
                     body.transform.position.y = pos.y - body.transform.size.y;
                 }
 
@@ -31,6 +32,7 @@ export const ColliderSystem: System = {
                 if (body.transform.position.y + body.transform.size.y > pos.y + size.y && body.velocity.linear.y < 0 &&
                     collider.boxCollider.collisions.bottom && transformIntersectBox(body.transform, bottomBox)) {
                     body.velocity.linear.y *= -collider.boxCollider.bounciness;
+                    body.velocity.uncappedLinear.y *= -collider.boxCollider.bounciness;
                     body.transform.position.y = pos.y + size.y;
                 }
 
@@ -38,6 +40,7 @@ export const ColliderSystem: System = {
                 if (body.transform.position.x < pos.x && collider.boxCollider.collisions.left &&
                     body.velocity.linear.x > 0 && transformIntersectBox(body.transform, leftBox)) {
                     body.velocity.linear.x *= -collider.boxCollider.bounciness;
+                    body.velocity.uncappedLinear.x *= -collider.boxCollider.bounciness;
                     body.transform.position.x = pos.x - body.transform.size.x;
                 }
 
@@ -45,6 +48,7 @@ export const ColliderSystem: System = {
                 if (body.transform.position.x + body.transform.size.x > pos.x + size.x && body.velocity.linear.x < 0 &&
                     collider.boxCollider.collisions.right && transformIntersectBox(body.transform, rightBox)) {
                     body.velocity.linear.x *= -collider.boxCollider.bounciness;
+                    body.velocity.uncappedLinear.x *= -collider.boxCollider.bounciness;
                     body.transform.position.x = pos.x + size.x;
                 }
 

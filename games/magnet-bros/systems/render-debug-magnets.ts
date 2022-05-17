@@ -1,10 +1,11 @@
+import { Debug } from "game-lib/base-components/debug.js";
 import { Transform } from "game-lib/base-components/transform.js";
 import { System } from "game-lib/types/system.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Entity } from "magnet-bros/metadata.js";
 
 export const DemoRender: System = {
-    requiredComponents: [[Transform, RadialMagneticField]],
+    requiredComponents: [[Debug, Transform, RadialMagneticField]],
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, radialFields: Entity[]) {
         for (const entity of radialFields) {
             const pos = entity.transform.position;

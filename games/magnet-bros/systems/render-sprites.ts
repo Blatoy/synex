@@ -8,6 +8,7 @@ export const spriteCache: { [key: string]: HTMLImageElement } = {};
 export const RenderSprite: System = {
     requiredComponents: [Transform, Sprite],
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, sprites: Entity[]) {
+        ctx.imageSmoothingEnabled = false;
         for (const sprite of sprites) {
             const pos = sprite.transform.position;
             const size = sprite.transform.size;
@@ -20,11 +21,27 @@ export const RenderSprite: System = {
 
             const image = spriteCache[spriteName];
             if (image.complete) {
-                ctx.drawImage(image,
-                    sprite.sprite.offsetX, sprite.sprite.offsetY,
-                    sprite.sprite.width, sprite.sprite.height,
-                    pos.x, pos.y,
-                    size.x, size.y);
+                if (sprite.sprite.mirrorX) {
+                    ctx.save();
+                    ctx.translate(sprite.transform.position.x, 0);
+                    ctx.scale(-1, 1);
+
+                    ctx.drawImage(image,
+                        sprite.sprite.offsetX, sprite.sprite.offsetY,
+                        sprite.sprite.width, sprite.sprite.height,
+                        -size.x, pos.y,
+                        size.x, size.y);
+
+                    ctx.scale(-1, 1);
+                    ctx.translate(-sprite.transform.position.x, 0);
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(image,
+                        sprite.sprite.offsetX, sprite.sprite.offsetY,
+                        sprite.sprite.width, sprite.sprite.height,
+                        pos.x, pos.y,
+                        size.x, size.y);
+                }
             }
         }
     }

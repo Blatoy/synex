@@ -1,10 +1,12 @@
 import { Owner } from "game-lib/base-components/owner.js";
 import { System } from "game-lib/types/system.js";
+import { Magnetic } from "magnet-bros/components/magnetic.js";
 import { Movement } from "magnet-bros/components/movement.js";
+import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Entity } from "magnet-bros/metadata.js";
 
 export const PlayerMovementSystem: System = {
-    requiredComponents: [Movement, Owner],
+    requiredComponents: [Movement, Owner, RadialMagneticField, Magnetic],
     updateAll(entity: Entity) {
         const playerActions = this.actions.ofPlayer(entity.owner.id);
 
@@ -15,5 +17,10 @@ export const PlayerMovementSystem: System = {
             && (playerActions["default:move_down"] ? false : true);
         entity.movement.fallThrough = (playerActions["default:move_down"] ? true : false)
             && (playerActions["default:drop_down"] ? true : false);
+
+        if (playerActions["default:toggle_magnet"]) {
+            entity.radialField.active = !entity.radialField.active;
+            entity.magnetic.active = !entity.magnetic.active;
+        }
     }
 };

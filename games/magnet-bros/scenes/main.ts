@@ -47,13 +47,13 @@ main.entities.push({
                 width: 1920,
                 height: 1080,
             } as Sprite
-        },
+        }, /*
         {
             Type: Debug,
             valuesOverride: {
                 fillRect: false
             } as Debug
-        },
+        }, */
         {
             Type: Transform,
             valuesOverride: {
@@ -73,8 +73,9 @@ main.entities.push({
         {
             Type: Debug,
             valuesOverride: {
+                fillRect: false,
                 fillColor: { r: 127, g: 0, b: 127, a: 0.5 }
-            }
+            } as Debug
         },
         {
             Type: Transform,
@@ -94,15 +95,16 @@ main.entities.push({
         {
             Type: Debug,
             valuesOverride: {
+                fillRect: false
             } as Debug
         },
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/platform.png",
-                name: "platform",
+                sheetURL: "./magnet-bros/main-platform.png",
+                name: "main-platform",
                 width: 500,
-                height: 200,
+                height: 109,
             } as Sprite
         },
         { Type: BoxCollider },

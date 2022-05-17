@@ -7,6 +7,7 @@ export const SpeedSystem: System = {
     requiredComponents: [Transform, Velocity],
     updateAll(entity: Entity) {
         entity.transform.position.add(entity.velocity.linear);
+        entity.transform.position.add(entity.velocity.uncappedLinear);
         entity.transform.rotation += entity.velocity.angular;
     }
 };

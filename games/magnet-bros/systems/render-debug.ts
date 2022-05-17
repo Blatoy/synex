@@ -18,7 +18,7 @@ export const DemoRender: System = {
             if (entity.debug.showName) {
                 ctx.textAlign = "center";
                 ctx.fillStyle = entity.debug.fillColor.toString();
-                ctx.fillText(entity.meta.name, pos.x + size.x / 2, pos.y);
+                ctx.fillText(entity.meta.name, pos.x + size.x / 2, pos.y - 10);
             }
 
             if (entity.debug.strokeRect) {
@@ -40,11 +40,14 @@ export const DemoRender: System = {
             for (let i = 0; i < detailedEntities.length; i++) {
                 const entity = detailedEntities[i];
                 if (entity.debug.showDetail) {
-                    let y = 5 - entity.debug.detailScroll * 5;
+                    let y = 30 - entity.debug.detailScroll * 5;
                     // name
                     ctx.font = "30px monospace";
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = 2;
+                    ctx.strokeText(`#${i} ${entity.meta.name}`, 15, y += 40);
                     ctx.fillStyle = entity.debug.fillColor.toString();
-                    ctx.fillText(`#${i} ${entity.meta.name}`, 15, y += 40);
+                    ctx.fillText(`#${i} ${entity.meta.name}`, 15, y);
 
                     ctx.font = "25px monospace";
                     ctx.fillStyle = "white";

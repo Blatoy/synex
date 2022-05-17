@@ -20,6 +20,10 @@ import { Movement } from "./components/movement.js";
 import { RespawnTimer } from "./components/respawn-timer.js";
 import { Magnetic } from "./components/magnetic.js";
 import { RadialMagneticField } from "./components/radial-magnetic-field.js";
+import { Animation } from "magnet-bros/components/animation.js";
+import { Lifetime } from "./components/lifetime.js";
+import { Explode } from "./components/explode.js";
+import { Explosion } from "./components/explosion.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -37,7 +41,11 @@ const components = {
     movement: Movement,
     respawnTimer: RespawnTimer,
     sprite: Sprite,
+    animation: Animation,
     magnetic: Magnetic,
+    lifetime: Lifetime,
+    explode: Explode,
+    explosion: Explosion,
     radialField: RadialMagneticField
 };
 
@@ -48,11 +56,17 @@ const systemFiles = [
     "spawner",
     "player-movement",
     "movement",
-    "magnets",
     "acceleration",
     "velocity",
     "collider",
+    "magnets",
+    "explosion",
+    "movement-animations",
+    "spawn-bomb",
+    "update-animations",
+    "lifetime",
     "render-sprites",
+    "render-magnets",
     "render-debug-magnets",
     "render-debug"
 ];
@@ -83,7 +97,9 @@ export const gameDefinition: GameMetadata = {
             "move_down": { keys: [Key.S, Key.ArrowDown] },
             "drop_down": { keys: [Key.Space] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },
-            "move_right": { keys: [Key.D, Key.ArrowRight] }
+            "move_right": { keys: [Key.D, Key.ArrowRight] },
+            "spawn_item": { keys: [Key.Q], fireOnce: true },
+            "toggle_magnet": { keys: [Key.ShiftLeft], fireOnce: true }
         }
     },
     version: "1.0.0"
