@@ -185,7 +185,7 @@ export class Graphics {
                     if (typeof data === "number") {
                         const y = gy + this.valueToY(data, max, gh);
                         const height = this.valueToHeight(data, max, gh);
-                        ctx.fillRect(x, y, width - 4, height);
+                        ctx.fillRect(x, y, width - 2, height);
                     } else {
                         let cumSum = 0;
                         for (let j = 0; j < data.values.length; j++) {
@@ -193,7 +193,7 @@ export class Graphics {
                             const y = gy + this.valueToY(cumSum, max, gh);
                             const height = this.valueToHeight(data.values[j], max, gh);
                             ctx.fillStyle = data.colors[j];
-                            ctx.fillRect(x, y, width - 4, height - 2);
+                            ctx.fillRect(x, y, width - 2, height - 2);
                         }
                     }
                 }

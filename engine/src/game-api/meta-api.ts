@@ -1,4 +1,5 @@
 import { Engine } from "engine.js";
+import { Component } from "game-lib/types/component.js";
 import { Meta } from "game-lib/types/game-api/meta.js";
 import { GameMetadata } from "game-lib/types/game-metadata.js";
 import { MetaEntity } from "meta-entity.js";
@@ -22,7 +23,7 @@ export class MetaAPI implements Meta {
                         systemCount.set(i, (systemCount.get(i) || 0) + 1);
                     }
                 } else {
-                    if (metaEntity.hasComponents([requiredComponent])) {
+                    if (metaEntity.hasComponents(requiredComponents as (typeof Component)[])) {
                         if (!systemCount.has(i)) {
                             systemIndices.push(i);
                         }
@@ -48,6 +49,11 @@ export class MetaAPI implements Meta {
     }
 
     get currentFrameIndex(): number {
+        return this.engine.currentState.frameIndex;
+    }
+
+    // Could this be done better?
+    get tick(): number {
         return this.engine.currentState.frameIndex;
     }
 
