@@ -233,8 +233,9 @@ export class Engine {
         for (const playerId in predictions) {
             if (playerId !== this.network.localId) {
                 for (const action of predictions[playerId].actions) {
-                    // Don't predict networking events
-                    if (action.context !== "network") {
+                    const actionDefinition = this.gameTemplate.gameMetadata.actions[action.context]?.[action.type];
+                    // Don't predict actions that does not have a definition (join, leave) or action that are only triggered once
+                    if (actionDefinition && !actionDefinition.fireOnce && !actionDefinition.mouseMove) {
                         this.currentState.actions.push(action);
                     }
                 }
