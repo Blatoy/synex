@@ -16,6 +16,7 @@ import { Magnetic } from "magnet-bros/components/magnetic.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Animation } from "magnet-bros/components/animation.js";
 import { Sprite } from "magnet-bros/components/sprite.js";
+import { TrackedEntity } from "magnet-bros/components/tracked-entity.js";
 
 export const SpawnerSystem: System = {
     requiredComponents: [[Spawner, Transform], [Owner, RespawnTimer]],
@@ -43,6 +44,7 @@ export const SpawnerSystem: System = {
                     for (const ownerId of spawnData) {
                         this.entities.spawn("Player " + ownerId,
                             { Type: RigidBody },
+                            { Type: TrackedEntity },
                             { Type: Magnetic },
                             { Type: RadialMagneticField },
                             {

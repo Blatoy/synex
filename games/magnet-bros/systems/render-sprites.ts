@@ -36,10 +36,14 @@ export const RenderSprite: System = {
                     ctx.translate(-sprite.transform.position.x, 0);
                     ctx.restore();
                 } else {
+                    const transform = ctx.getTransform();
+                    const tx = -pos.x - size.x / 2 + ((-transform.e + pos.x + size.x / 2) / transform.a);
+                    const ty = -pos.y - size.y / 2 + ((-transform.f + pos.y + size.y / 2) / transform.d);
+
                     ctx.drawImage(image,
                         sprite.sprite.offsetX, sprite.sprite.offsetY,
                         sprite.sprite.width, sprite.sprite.height,
-                        pos.x, pos.y,
+                        pos.x + tx * sprite.sprite.parallax, pos.y + ty * sprite.sprite.parallax,
                         size.x, size.y);
                 }
             }

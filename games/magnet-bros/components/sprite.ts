@@ -9,5 +9,7 @@ export class Sprite extends Component {
     width = 0;
     height = 0;
 
+    parallax = 0;
+
     mirrorX = false;
 }

@@ -34,31 +34,72 @@ const glassBaseComponents = [
 ];
 
 
+
 main.entities.push({
-    metadata: {
-        name: "Background"
-    },
+    metadata: { name: "Background-2" },
     components: [
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/background.png",
+                sheetURL: "./magnet-bros/main-bg.png",
                 name: "background",
                 width: 1920,
                 height: 1080,
+                parallax: 0.9,
             } as Sprite
-        }, /*
-        {
-            Type: Debug,
-            valuesOverride: {
-                fillRect: false
-            } as Debug
-        }, */
+        },
         {
             Type: Transform,
             valuesOverride: {
                 position: { x: 0, y: 0 },
                 size: { x: GAME_WIDTH, y: GAME_HEIGHT }
+            }
+        }
+    ]
+});
+
+main.entities.push({
+    metadata: { name: "Background-2" },
+    components: [
+        {
+            Type: Sprite,
+            valuesOverride: {
+                sheetURL: "./magnet-bros/galaxy.png",
+                name: "galaxy",
+                width: 1920,
+                height: 1080,
+                parallax: 0.87,
+            } as Sprite
+        },
+        {
+            Type: Transform,
+            valuesOverride: {
+                position: { x: 0, y: 0 },
+                size: { x: GAME_WIDTH, y: GAME_HEIGHT }
+            }
+        }
+    ]
+});
+
+
+main.entities.push({
+    metadata: { name: "Background-3" },
+    components: [
+        {
+            Type: Sprite,
+            valuesOverride: {
+                sheetURL: "./magnet-bros/sun.png",
+                name: "sun",
+                width: 1200,
+                height: 1050,
+                parallax:1,
+            } as Sprite
+        },
+        {
+            Type: Transform,
+            valuesOverride: {
+                position: { x: -300, y: -300 },
+                size: { x: 1200 / 2, y: 1050 / 2 }
             }
         }
     ]

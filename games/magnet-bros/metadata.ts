@@ -24,6 +24,7 @@ import { Animation } from "magnet-bros/components/animation.js";
 import { Lifetime } from "./components/lifetime.js";
 import { Explode } from "./components/explode.js";
 import { Explosion } from "./components/explosion.js";
+import { TrackedEntity } from "./components/tracked-entity.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -46,7 +47,8 @@ const components = {
     lifetime: Lifetime,
     explode: Explode,
     explosion: Explosion,
-    radialField: RadialMagneticField
+    radialField: RadialMagneticField,
+    trackedEntity: TrackedEntity,
 };
 
 const systemFiles = [
@@ -65,10 +67,13 @@ const systemFiles = [
     "spawn-bomb",
     "update-animations",
     "lifetime",
+    "player-despawner",
+    "camera-tracker-start",
     "render-sprites",
     "render-magnets",
     "render-debug-magnets",
-    "render-debug"
+    "render-debug",
+    "camera-tracker-end",
 ];
 
 export const gameDefinition: GameMetadata = {

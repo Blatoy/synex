@@ -29,6 +29,8 @@ export const DemoRender: System = {
 
         }
 
+        ctx.save();
+        ctx.resetTransform();
         const anySelected = detailedEntities.some(e => e.debug.showDetail);
         if (anySelected) {
             // Background
@@ -101,5 +103,7 @@ export const DemoRender: System = {
                 }
             }
         }
+
+        ctx.restore();
     }
 };
