@@ -6,8 +6,7 @@ export class ComponentManager {
 
         for (const key in data.valuesOverride) {
             if (key in component) {
-                // TODO: Find a way to not cast as any here
-                const componentValue = (component as any);
+                const componentValue = (component as { [key: string]: unknown });
                 const newValue = data.valuesOverride[key];
                 const isObject = typeof componentValue[key] === "object";
                 if (isObject) {

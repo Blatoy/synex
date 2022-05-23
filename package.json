@@ -22,7 +22,7 @@
     "watch:games": "tsc-watch --build ./games --preserveWatchOutput --onSuccess \"tsc-alias -p ./games/tsconfig.json -r ./tools/game-lib-replacer.js\"",
     "watch:views": "tsc-watch --build ./views --preserveWatchOutput --onSuccess \"tsc-alias -p ./views/tsconfig.json -r ./tools/engine-replacer.js\"",
     "watch:static-copy": "node ./tools/views-copy-static.js",
-    "serve": "http-server ./dist"
+    "serve": "http-server ./dist -p 43223"
   },
   "repository": {
     "type": "git",

@@ -1,12 +1,14 @@
 export type Actions = {
-    ofPlayer(ownerId: number): { [key: string]: Action }
-    byType(type: string): Action[]
+    ofPlayer(ownerId: string): { [key: string]: Action }
+    byType(context: string, type: string): Action[]
     setContext(context: string): void
-    local: { [key: string]: Action }
+    broadcast(type: string, value?: unknown): void;
+    ofLocalPlayer(): { [key: string]: Action }
 }
 
 export type Action = {
     type: string,
-    ownerId: number,
+    ownerId: string,
+    context: string,
     data?: unknown
 }

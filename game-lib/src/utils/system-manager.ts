@@ -18,8 +18,17 @@ export class SystemManager {
 
         return async (...systemFiles: string[]) => {
             const promises = systemFiles.map(file => import(`${basePath}/systems/${file}.js?r=${Math.random()}`));
-            const systems = await Promise.all(promises);
-            return systems.map((system) => Object.values(system)[0]) as System[];
+            try {
+                const systems = await Promise.all(promises);
+                return systems.map((system) => Object.values(system)[0]) as System[];
+            } catch (e) {
+                promises.map((p, i) => p.catch(() => {
+                    console.warn(`System systems/${systemFiles[i]}.ts could not be loaded for the following reason:`);
+                    console.error(e);
+                }));
+
+                return [];
+            }
         };
     }
 
@@ -50,7 +59,6 @@ export class SystemManager {
             matchingEntityGroups.push(entities.filter(entity => entity.meta.hasComponents(requiredComponentsArray)));
         }
 
-        const filteredEntityGroups = matchingEntityGroups.filter(groups => groups.length > 0);
-        return filteredEntityGroups;
+        return matchingEntityGroups;
     }
 }

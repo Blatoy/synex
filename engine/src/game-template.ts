@@ -43,7 +43,8 @@ export class GameTemplate {
     loadScene(scene: Scene) {
         const entities: GenericEntity[] = [];
 
-        scene.entities.forEach((entityDefinition) => {
+        for (const entityDefinition of scene.entities) {
+            // TODO: Add a function to do entity creation, as this is also used in entities-api
             const entity: GenericEntity = {
                 meta: new MetaEntity(
                     entityDefinition.metadata.name,
@@ -56,7 +57,7 @@ export class GameTemplate {
             });
 
             entities.push(entity);
-        });
+        }
 
         return entities;
     }

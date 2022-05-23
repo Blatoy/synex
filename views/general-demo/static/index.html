@@ -6,15 +6,36 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synex</title>
-    <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
     <link rel="stylesheet" href="./style.css">
     <script type="module" src="/scripts/views/general-demo/index.js"></script>
 </head>
 
 <body>
+    <template id="debug-template">
+        <label>Debug mode:</label><select class="select-label">
+            <option value="0">DISABLED</option>
+            <option value="1" selected>MINIMAL</option>
+            <option value="2">ALL_GRAPHS</option>
+            <option value="3">ROLLBACK</option>
+            <option value="4">ROLLBACK_SIMPLE</option>
+        </select>
+        <span class="local-adapter">
+            <label>Jitter (ms):</label><input class="small-number jitter-input" type="number" value="0">
+            <label>Lag (ms):</label><input class="small-number lag-input" type="number" value="0">
+        </span>
+        <span class="ws-adapter">
+            Websocket Status:<span class="ws-adapter-status">disconnected</span>
+        </span>
+        <label>Disable predictions:</label><input type="checkbox" class="no-prediction">
+    </template>
     <div id="games">
         <div id="game-1" class="game-container"></div>
         <div id="game-2" class="game-container"></div>
+    </div>
+    <div id="games-debug">
+        <div id="debug-game-1" class="debug-container"></div>
+        <div id="debug-game-2" class="debug-container"></div>
     </div>
 </body>
 

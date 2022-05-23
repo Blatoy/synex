@@ -10,6 +10,9 @@ import { Bounce } from "./components/bounce.js";
 import { Key } from "game-lib/utils/keycode.js";
 import { Owner } from "./components/owner.js";
 import { Menu } from "./components/menu.js";
+import { Spawner } from "./components/spawner.js";
+import { Mouse } from "game-lib/utils/mouse.js";
+import { DemoSelected } from "./components/demo-selected.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -24,24 +27,32 @@ const components = {
     debug: Debug,
     bounce: Bounce,
     owner: Owner,
-    menu: Menu
+    menu: Menu,
+    spawner: Spawner,
+    demoSelected: DemoSelected
 };
 
 export const gameDefinition: GameMetadata = {
     systems: await importSystems(
         "velocity",
         "render-debug",
+        "demo-update",
+        "demo-render",
+        "player-spawner",
         "force",
         "bounce",
         "move",
         "menu"
     ),
+    systemNames: [],
     components: components,
     scenes: [
         main
     ],
     actions: {
         "default": {
+            "debug_select": { keys: [Key.ControlLeft], mouseClick: [Mouse.left], synchronized: false },
+            "teleport_player": { keys: [Key.ControlLeft], mouseDown: [Mouse.middle] },
             "move_up": { keys: [Key.W, Key.ArrowUp] },
             "move_down": { keys: [Key.S, Key.ArrowDown] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },
@@ -49,6 +60,7 @@ export const gameDefinition: GameMetadata = {
             "open_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
         },
         "menu": {
+            "spawn": { keys: [Key.P], synchronized: false, fireOnce: true },
             "close_menu": { keys: [Key.Escape], synchronized: false, fireOnce: true },
             "enter": { keys: [Key.Enter, Key.Space], synchronized: false, fireOnce: true },
             "left": { keys: [Key.A, Key.ArrowLeft, Key.W, Key.ArrowUp], synchronized: false, fireOnce: true },

@@ -12,22 +12,33 @@ export type SerializedState = {
 
 export class State {
     constructor(
+        private gameTemplate: GameTemplate,
         public entities: GenericEntity[] = [],
         public actions: Action[] = [],
         public actionContext = "default",
-        public frameIndex: number = 0
+        public frameIndex: number = 0,
+        public onlyActions = false
     ) { }
 
-    clone(gameTemplate: GameTemplate) {
-        return State.deserialize(this.serialize(), gameTemplate);
+    clone() {
+        return State.deserialize(this.serialize(), this.gameTemplate);
     }
 
-    lightClone() {
+    cloneActions() {
         // using new every frame may be an issue?
         // also the name of this function sucks
-        return new State([], this.actions.map(action => {
+        return new State(this.gameTemplate, [], this.actions.map(action => {
             return { ...action };
-        }), this.actionContext, this.frameIndex);
+        }), this.actionContext, this.frameIndex, true);
+    }
+
+    clearActions() {
+        this.actions = [];
+    }
+
+    convertToActionState() {
+        this.entities = [];
+        this.onlyActions = true;
     }
 
     serialize() {
@@ -43,9 +54,9 @@ export class State {
     static deserialize(state: string, gameTemplate: GameTemplate) {
         const entities: GenericEntity[] = [];
         const deserialized: SerializedState = JSON.parse(state);
-        const savedEntities: SerializedEntity[] = deserialized.entities; // TODO: Correct typing
+        const savedEntities: SerializedEntity[] = deserialized.entities;
 
-        savedEntities.forEach((savedEntity) => {
+        for (const savedEntity of savedEntities) {
             // Create entity
             const entity: GenericEntity = {
                 meta: new MetaEntity(
@@ -56,6 +67,16 @@ export class State {
 
             // For each components of the entity, set back their value
             for (const componentClass of entity.meta.components) {
+                if (!componentClass) {
+                    console.warn("Entity named '" + entity.meta.name + "' contains an invalid component. Component list: [", entity.meta.components.map((c, i) => {
+                        if (c) {
+                            return c.componentName;
+                        } else {
+                            return "(invalid, index = " + i + ")";
+                        }
+                    }).join(", "), "]. Is the component include in metadata.ts? Does the component exists where the entity is created?");
+                    continue;
+                }
                 const component = new componentClass();
                 entity[componentClass.componentName] = component;
                 for (const key in savedEntity[componentClass.componentName]) {
@@ -68,8 +89,8 @@ export class State {
             }
 
             entities.push(entity);
-        });
+        }
 
-        return new State(entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
+        return new State(gameTemplate, entities, deserialized.actions, deserialized.actionContext, deserialized.frameIndex);
     }
 }

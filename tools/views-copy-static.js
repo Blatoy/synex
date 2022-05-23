@@ -10,44 +10,60 @@ const generatedPath = path.join(distFolder, "views");
 let done = true;
 async function copyStaticFiles() {
     if (!done) return;
-
     done = false;
+
     try {
         await fsPromise.mkdir(distFolder);
     } catch (e) {
-        console.warn("Could not create dir", distFolder);
+        console.warn("Not (re)creating dir", distFolder);
     }
     try {
         await fsPromise.rm(generatedPath, { recursive: true });
     } catch (e) {
-        console.warn("Could not remove dir", generatedPath);
+        console.warn("Not (re)removing", generatedPath);
     }
-    
+
     try {
         await fsPromise.mkdir(generatedPath);
-     } catch (e) {
-        console.warn("Could not create dir", generatedPath);
+    } catch (e) {
+        console.warn("Not (re)creating dir", generatedPath);
     }
 
     const files = await fsPromise.readdir(viewPath);
 
-    for (const file of files) {
-        const outPath = path.join(generatedPath, file);
-        const inPath = path.join(viewPath, file);
+    try {
+        for (const file of files) {
+            const outPath = path.join(generatedPath, file);
+            const inPath = path.join(viewPath, file);
 
-        const stats = await fsPromise.lstat(inPath);
-        if (stats.isDirectory() && !outPath.startsWith("/")) {
-            await fsPromise.mkdir(outPath);
-            await fsPromise.cp(path.join(inPath, "static"), outPath, { recursive: true });
+            const stats = await fsPromise.lstat(inPath);
+            if (stats.isDirectory() && !outPath.startsWith("/")) {
+                try {
+                    await fsPromise.mkdir(outPath);
+                }
+                catch (e) {
+                    console.log("Could not create dir", outPath);
+                }
+                await fsPromise.cp(path.join(inPath, "static"), outPath, { recursive: true });
+            }
         }
+        console.log("Copied static files.");
     }
-    done = true;
+    catch (e) {
+        console.error("Could not copy static files!", e);
+    }
+    finally {
+        done = true;
+    }
+
+
 }
 
 copyStaticFiles();
 
-chokidar.watch(viewPath, { recursive: true }, async () => {
-    if (done) {
-        await copyStaticFiles();
-    }
+const watcher = chokidar.watch("./views", { atomic: true, recursive: true, ignoreInitial: false });
+
+watcher.on("change", async () => {
+    await copyStaticFiles();
 });
+
