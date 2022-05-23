@@ -223,9 +223,18 @@ export class Engine {
             return;
         }
 
+        let earliestFrame = Infinity;
         const predictions = this.network.predictions;
         for (const playerId in predictions) {
             if (playerId !== this.network.localId) {
+                for (let i = predictions[playerId].lastFrameIndex; i < this.rollback.stateBuffer.length; i++) {
+                    if (this.rollback.updateStateBuffer(i, playerId, predictions[playerId].actions)) {
+                        if (i < earliestFrame) {
+                            earliestFrame = i;
+                        }
+                    }
+                }
+
                 for (const action of predictions[playerId].actions) {
                     const actionDefinition = this.gameTemplate.gameMetadata.actions[action.context]?.[action.type];
                     // Don't predict actions that does not have a definition (join, leave) or action that are only triggered once
@@ -234,6 +243,13 @@ export class Engine {
                     }
                 }
             }
+        }
+
+
+        if (earliestFrame !== Infinity) {
+            this.debugger.onRollbackStart();
+            this.rollbackFromFrame(earliestFrame);
+            this.debugger.onRollbackEnd();
         }
     }
 
