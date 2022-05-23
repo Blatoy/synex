@@ -7,6 +7,8 @@ export class Rollback {
     frameCountOffset = 0;
     readonly FULL_SNAPSHOT_EVERY_FRAME_COUNT = 60;
 
+    private doSnapshot = false;
+
     constructor(private engine: Engine) { }
 
     saveNewStateToBuffer(state: State) {
@@ -15,7 +17,8 @@ export class Rollback {
             return;
         }
         // TODO: Don't allow state buffer to grow infinitely
-        if (state.frameIndex % this.FULL_SNAPSHOT_EVERY_FRAME_COUNT === 0) {
+        if (this.doSnapshot || state.frameIndex % this.FULL_SNAPSHOT_EVERY_FRAME_COUNT === 0) {
+            this.doSnapshot = false;
             this.stateBuffer.push(state.clone());
         } else {
             this.stateBuffer.push(state.cloneActions());
@@ -107,9 +110,6 @@ export class Rollback {
         const restoredState = fullSnapshot.clone();
 
         // Clear full states
-        // TODO: This should still recreate new frames every x
-        // Otherwise, if there is always a misprediction, it will never
-        // manage to save another frame
         for (let i = index + 1; i < this.stateBuffer.length; i++) {
             this.stateBuffer[i].onlyActions = true;
             this.stateBuffer[i].entities = [];
@@ -121,6 +121,10 @@ export class Rollback {
             this.setActionsFromBuffer(restoredState, i);
             this.engine.debugger.onRollbackTick(restoredState);
             this.engine.tick(restoredState);
+        }
+
+        if (this.stateBuffer.length - index > this.FULL_SNAPSHOT_EVERY_FRAME_COUNT) {
+            this.doSnapshot = true;
         }
 
         return restoredState;
