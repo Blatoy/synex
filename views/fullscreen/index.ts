@@ -2,14 +2,14 @@ import { Engine } from "engine/engine.js";
 import { GameTemplate } from "engine/game-template.js";
 
 let engine: Engine;
-const gameTemplate = new GameTemplate("/scripts/games/demo-game");
+const gameTemplate = new GameTemplate("/scripts/games/magnet-bros");
 
 window.addEventListener("load", async () => {
     await gameTemplate.load();
     engine = new Engine("Engine 1", gameTemplate, document.getElementById("game") as HTMLDivElement);
     engine.start();
+    engine.debugger.debugLevel = 1;
     (window as any).engines = [engine];
-    (window as any).mode = 1;
 });
 
 document.addEventListener("keydown", async (e) => {

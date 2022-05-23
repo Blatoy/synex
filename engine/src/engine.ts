@@ -30,8 +30,6 @@ export class Engine {
     entitiesAPI: EntitiesAPI;
     metaAPI: MetaAPI;
 
-    justJoinedScene = false;
-
     gameCanvas;
 
     constructor(
@@ -61,33 +59,29 @@ export class Engine {
      * Start game logic
      */
     async start() {
-        let connected = false;
         try {
             // Connect to game server
             await this.network.connect(window.location.hostname, 43222);
-
-            // Check if there is an existing state
-            const latestState = await this.network.getLatestState();
-            if (latestState) {
-                // TODO: This could be done in a network'd scene change, to allow having a main menu for example
-                this.previousUpdateTime = performance.now();
-                this.loadState(latestState);
-                // TODO: Maybe this is not the best way to fill previous "unknown" state (?)
-                this.rollback.onLateJoin(this.currentState);
-                this.debugger.onLateJoin(this.currentState);
-            } else {
-                this.currentState = new State(this.gameTemplate, this.gameTemplate.loadScene(this.gameTemplate.mainScene));
-            }
-
-            connected = true;
         } catch (e) {
             console.warn("Could not connect to game server", e);
         }
 
-        if (connected) {
-            this.network.onSceneLoaded(this.currentState.frameIndex);
-            this.gameLoop();
+        // Check if there is an existing state
+        const latestState = await this.network.getLatestState();
+
+        if (latestState) {
+            // TODO: This could be done in a network'd scene change, to allow having a main menu for example
+            this.previousUpdateTime = performance.now();
+            this.loadState(latestState);
+            // TODO: Maybe this is not the best way to fill previous "unknown" state (?)
+            this.rollback.onLateJoin(this.currentState);
+            this.debugger.onLateJoin(this.currentState);
+        } else {
+            this.currentState = new State(this.gameTemplate, this.gameTemplate.loadScene(this.gameTemplate.mainScene));
         }
+
+        this.network.onSceneLoaded(this.currentState.frameIndex);
+        this.gameLoop();
     }
 
     /**

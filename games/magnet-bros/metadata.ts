@@ -82,7 +82,8 @@ export const gameDefinition: GameMetadata = {
         "default": {
             "debug_select": {
                 mouseClick: [Mouse.left],
-                keys: [Key.ControlLeft],
+                keys: [],
+                fireOnce: true,
                 synchronized: false
             },
             "debug_scroll_down": {
@@ -98,7 +99,7 @@ export const gameDefinition: GameMetadata = {
             "drop_down": { keys: [Key.Space] },
             "move_left": { keys: [Key.A, Key.ArrowLeft] },
             "move_right": { keys: [Key.D, Key.ArrowRight] },
-            "spawn_item": { keys: [Key.Q], fireOnce: true },
+            "spawn_item": { keys: [Key.Q, Key.ControlLeft, Key.F, Key.E], fireOnce: true },
             "toggle_magnet": { keys: [Key.ShiftLeft], fireOnce: true }
         }
     },

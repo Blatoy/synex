@@ -3,7 +3,7 @@ import { Color } from "../utils/color.js";
 
 export class Debug extends Component {
     fillColor = new Color(255, 0, 0, 0.5);
-    fillRect = true;
+    fillRect = false;
     strokeColor = new Color(255, 0, 0, 1);
     strokeRect = false;
 

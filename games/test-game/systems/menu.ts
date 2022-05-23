@@ -55,9 +55,7 @@ export const MenuSystem: System = {
 
                     this.actions.broadcast("set_color", color);
                 } break;
-                case 1: {
-                    (window as any).engines[0].replayIndex = 0;
-                }
+                case 1: 
                     break;
                 case 2:
                     entity.menu.opened = false;

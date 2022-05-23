@@ -2,7 +2,7 @@ import { System } from "game-lib/types/system.js";
 import { Owner } from "demo-game/components/owner.js";
 import { Entity } from "demo-game/metadata.js";
 
-export const PlayerSpawner: System = {
+export const PlayerDespawner: System = {
     requiredComponents: [Owner],
     updateAll(despawnedEntity: Entity) {
         const playerActions = this.actions.ofPlayer(despawnedEntity.owner.id);
