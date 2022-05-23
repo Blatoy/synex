@@ -22,6 +22,8 @@ export class Network {
     public packetSentThisFrame = false;
     public ignoreEventBroadcast = false;
 
+    public engineReady = false;
+
     constructor(private engine: Engine) {
         this.adapter = new LocalAdapter(
             this.onRequestFrameIndex.bind(this),
@@ -46,6 +48,7 @@ export class Network {
         // But since onSceneLoaded is called before the game loop
         // The action buffer is cleared instantly
         // This ensures the join event is handled locally on the next frame too
+        this.engineReady = true;
         this.onEventsReceived(["sceneLoaded"], "network", this.localId, frameIndex);
         this.sendToAll(["sceneLoaded"], [], "network", frameIndex);
     }
@@ -78,6 +81,11 @@ export class Network {
     }
 
     private onEventsReceived(actions: NetworkAction[], context: string, playerId: string, frameIndex: number): void {
+        // Ignore anything received before the engine is ready (has a scene loaded)
+        if (!this.engineReady) {
+            return;
+        }
+
         if (!this._actionQueue.has(frameIndex)) {
             this._actionQueue.set(frameIndex, {});
         }
