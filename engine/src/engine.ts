@@ -311,7 +311,7 @@ export class Engine {
             this.currentState.clearActions();
             this.setActionsFromInputs();
             this.predictNextActions();
-            this.rollback.saveStateToBuffer(this.currentState);
+            this.rollback.saveNewStateToBuffer(this.currentState);
 
             this.tick(this.currentState);
             this.updateLag -= this.MS_PER_FRAME;

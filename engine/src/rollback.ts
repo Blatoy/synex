@@ -9,7 +9,11 @@ export class Rollback {
 
     constructor(private engine: Engine) { }
 
-    saveStateToBuffer(state: State) {
+    saveNewStateToBuffer(state: State) {
+        // Overriding an already saved state is forbidden
+        if (state.frameIndex < this.stateBuffer.length) {
+            return;
+        }
         // TODO: Don't allow state buffer to grow infinitely
         if (state.frameIndex % this.FULL_SNAPSHOT_EVERY_FRAME_COUNT === 0) {
             this.stateBuffer.push(state.clone());
