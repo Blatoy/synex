@@ -10,7 +10,7 @@ export class WSAdapter extends NetworkAdapterInterface {
 
     constructor(
         requestFrameIndexHandler: () => number,
-        requestStateHandler: () => string,
+        requestStateHandler: () => Promise<string>,
         eventHandler: (actions: NetworkAction[], context: string, playerId: string, frameIndex: number) => void) {
         super(requestFrameIndexHandler, requestStateHandler, eventHandler);
         // TODO: Add timeout server side to avoid player never disconnecting
@@ -67,7 +67,7 @@ export class WSAdapter extends NetworkAdapterInterface {
         });
     }
 
-    private handleMessage(message: MessageEvent<string>) {
+    private async handleMessage(message: MessageEvent<string>) {
         try {
             const data = JSON.parse(message.data) as { type: string, data: unknown };
             switch (data.type) {
@@ -79,7 +79,7 @@ export class WSAdapter extends NetworkAdapterInterface {
                 case "query-latest-state":
                     this.socket?.send(JSON.stringify({
                         type: "latest-state",
-                        data: this.requestStateHandler()
+                        data: await this.requestStateHandler()
                     }));
                     break;
                 case "query-frame-index":

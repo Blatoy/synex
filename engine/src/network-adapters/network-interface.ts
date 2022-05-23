@@ -3,7 +3,7 @@ import { NetworkAction } from "network.js";
 export abstract class NetworkAdapterInterface {
     constructor(
         public requestFrameIndexHandler: () => number,
-        public requestStateHandler: () => string,
+        public requestStateHandler: () => Promise<string>,
         public eventHandler: (actions: string[], context: string, playerId: string, frameIndex: number) => void
     ) { }
 

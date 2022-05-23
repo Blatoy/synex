@@ -71,8 +71,17 @@ export class Network {
         return this._predictions;
     }
 
-    private onRequestState(): string {
-        return this.engine.serializeState();
+    private onRequestState(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            // Wait for engine to load first frame
+            if (this.engineReady) {
+                resolve(this.engine.serializeState());
+            } else {
+                setTimeout(() => {
+                    resolve(this.onRequestState());
+                }, 0);
+            }
+        });
     }
 
     // TODO: this should be tracked service side

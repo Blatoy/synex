@@ -13,7 +13,7 @@ export class LocalAdapter extends NetworkAdapterInterface {
 
     constructor(
         requestFrameIndexHandler: () => number,
-        requestStateHandler: () => string,
+        requestStateHandler: () => Promise<string>,
         eventHandler: (action: string[], context: string, playerId: string, frameIndex: number) => void) {
 
         super(requestFrameIndexHandler, requestStateHandler, eventHandler);
@@ -22,7 +22,7 @@ export class LocalAdapter extends NetworkAdapterInterface {
 
     getLatestState(): Promise<string | null> {
         if (!this.isHost) {
-            return Promise.resolve(clientsAdapters[0].requestStateHandler());
+            return clientsAdapters[0].requestStateHandler();
         } else {
             return Promise.resolve(null);
         }
