@@ -1,20 +1,56 @@
 body {
-    background-color: #222225;
+    background-color: #111111;
     margin: 0;
+    color: #fefefa;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-#games {
+#games, #games-debug {
     display: flex;
     justify-items: center;
     flex-basis: 100%;
-    gap: 10px;
+    gap: 2px;
 }
 
-.game-container {
+.game-container, .debug-container {
     flex: 1;
+}
+
+.debug-container {
+    padding-left: 4px;
+}
+
+canvas {
+    box-sizing: border-box;
+    border: 2px solid black;
+}
+
+canvas.selected {
+    border: 2px solid #37acda;
 }
 
 .game-container canvas {
     background-color: #111;
     width: 100%;
+}
+
+.small-number {
+    width: 50px;
+}
+
+input, select {
+    background-color: #050505;
+    border: 1px solid black;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 4px;
+}
+
+.hidden {
+    display: none;
+}
+
+label {
+    margin-left: 4px;
+    margin-right: 1px;
 }

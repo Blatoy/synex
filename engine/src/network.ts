@@ -12,7 +12,7 @@ type Predictions = Record<string, { lastFrameIndex: number, actions: Action[] }>
 export type NetworkAction = { type: string, data?: unknown } | string;
 
 export class Network {
-    private adapter: NetworkAdapterInterface;
+    public adapter: NetworkAdapterInterface;
     private _localId = "-1";
 
     // TODO: clear action/input confusion naming
