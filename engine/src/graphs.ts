@@ -44,7 +44,7 @@ export type GraphSettings = {
     color?: string
     slidingAverageColor?: string
     data: number[] | StackBarData[]
-    previousMax?: number
+    decreaseMaxTime?: number
 }
 
 type LabelPosition = {
@@ -116,6 +116,18 @@ export class Graphics {
         const end = settings.crop?.end || settings.data.length;
 
         let { min, max } = this.minMaxInData(start, end, settings.data);
+
+        if (settings.maxValue === undefined || max >= settings.maxValue) {
+            settings.maxValue = max;
+            settings.decreaseMaxTime = 180;
+        } else if (settings.decreaseMaxTime !== undefined) {
+            settings.decreaseMaxTime--;
+        }
+
+        if (settings.decreaseMaxTime && settings.decreaseMaxTime <= 0) {
+            settings.maxValue += Math.round(10 * (max - settings.maxValue) * 0.2) / 10;
+            settings.decreaseMaxTime = 2;
+        }
 
         if (settings.maxValue !== undefined) {
             max = settings.maxValue;

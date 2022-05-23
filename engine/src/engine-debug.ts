@@ -2,6 +2,7 @@ import { State } from "./frame-state.js";
 import { Engine } from "engine.js";
 import { Graphics, GraphSettings, GraphType, LabelType } from "graphs.js";
 
+type DefaultGraphSettings = Omit<Omit<GraphSettings, "position">, "size">;
 
 export enum DebugMode {
     DISABLED,
@@ -47,6 +48,102 @@ export class EngineDebugger {
 
     overrideRenderedState: State | undefined;
     rollbackReplayIndex = 0;
+
+    private actionCountGraph: DefaultGraphSettings = {
+        data: [],
+        type: GraphType.bars,
+        labels: {
+            title: "Actions count and their context in frames buffer",
+            bottomCenter: { type: LabelType.middle },
+            topLeft: { type: LabelType.maxValue },
+            topRight: { type: LabelType.maxValue },
+            bottomLeft: { type: LabelType.start },
+            bottomRight: { type: LabelType.end }
+        }
+    };
+
+    private stateBufferType: DefaultGraphSettings = {
+        data: [],
+        minValue: 0,
+        maxValue: 2,
+        type: GraphType.bars,
+        labels: {
+            title: "Full snapshot vs actions only snapshot",
+            bottomCenter: { type: LabelType.middle },
+            bottomLeft: { type: LabelType.start },
+            bottomRight: { type: LabelType.end }
+        }
+    };
+
+    private rollBackGraph: DefaultGraphSettings = {
+        data: [],
+        type: GraphType.bars,
+        labels: {
+            title: "Number of time a frame has been rolled back",
+            bottomCenter: { type: LabelType.middle },
+            bottomLeft: { type: LabelType.start },
+            topLeft: { type: LabelType.maxValue },
+            topRight: { type: LabelType.maxValue },
+            bottomRight: { type: LabelType.end }
+        }
+    };
+
+    private renderTimeGraph: DefaultGraphSettings = {
+        data: [],
+        type: GraphType.lines,
+        labels: {
+            title: "Render time history",
+            bottomCenter: { type: LabelType.middle },
+            topLeft: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+            topRight: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+            bottomRight: { type: LabelType.end },
+            xAxisZero: { type: LabelType.start },
+        }
+    };
+
+    private tickTimeGraph: DefaultGraphSettings = {
+        data: [],
+        type: GraphType.lines,
+        labels: {
+            title: "Tick time history",
+            bottomCenter: { type: LabelType.middle },
+            topLeft: { decimals: 2, type: LabelType.maxValue },
+            topRight: { decimals: 2, type: LabelType.maxValue },
+            bottomRight: { type: LabelType.end },
+            bottomLeft: { type: LabelType.start },
+        }
+    };
+
+    private lagOverTimeGraph: DefaultGraphSettings = {
+        data: [],
+        slidingAverage: 10,
+        type: GraphType.lines,
+        maxValue: 20,
+        minValue: 0,
+        labels: {
+            title: "Lag over time",
+            bottomCenter: { type: LabelType.middle },
+            topLeft: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+            topRight: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
+            bottomRight: { type: LabelType.end },
+            xAxisZero: { type: LabelType.start },
+        }
+    };
+
+    private tickCountGraph: DefaultGraphSettings = {
+        data: [],
+        slidingAverage: 10,
+        type: GraphType.bars,
+        labels: {
+            title: "Tick count per frame",
+            bottomCenter: { type: LabelType.middle },
+            topLeft: { decimals: 0, type: LabelType.maxValue },
+            topRight: { decimals: 0, type: LabelType.maxValue },
+            bottomRight: { type: LabelType.end },
+            bottomLeft: { type: LabelType.start },
+        }
+    };
+
 
     constructor(private engine: Engine) {
         setInterval(() => {
@@ -229,7 +326,7 @@ export class EngineDebugger {
         this.renderTimeHistory.push(this.times.lastRender);
     }
 
-    private drawGraphGrid(y: number, x: number, graphCount: number, height: number, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, graphSettings: Omit<Omit<GraphSettings, "position">, "size">) {
+    private drawGraphGrid(y: number, x: number, graphCount: number, height: number, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, graphSettings: DefaultGraphSettings) {
         const graphSize = 0.14;
         const offsetY = 0.001;
         const offsetX = 0.0002;
@@ -266,7 +363,7 @@ export class EngineDebugger {
             `entity count: ${state.entities.length.toString().padStart(4, " ")} - ` +
             `uptime: ${(state.frameIndex / 60).toFixed(0)}s - tick: ${this.times.lastTick.toFixed(2)}ms - ` +
             `render: ${this.times.lastRender.toFixed(2)}ms - rollback: ${this.times.lastRollback.toFixed(2)}ms - ` +
-            `update lag: ${this.engine.updateLag.toFixed(2).padStart(5, "0")}ms - ` +
+            `update lag: ${this.engine.updateLag.toFixed(2).padStart(5, " ")}ms - ` +
             `rollback buff size: ${this.engine.rollback.stateBuffer.length.toString().padStart(5, " ")}`
             , 10, 7);
 
@@ -274,8 +371,8 @@ export class EngineDebugger {
             return;
         }
 
-        let stateCrop = Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 5);
-        let rollbackCrop = Graphics.cropEnd(this.rollbackCountPerFrame.length + 1, 60 * 5);
+        let stateCrop = Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 3);
+        let rollbackCrop = Graphics.cropEnd(this.rollbackCountPerFrame.length, 60 * 3);
 
         if (this.overrideRenderedState) {
             stateCrop = {
@@ -288,136 +385,59 @@ export class EngineDebugger {
                 end: this.overrideRenderedState.frameIndex
             };
         }
-        const actionCountGraph = {
-            data: this.engine.rollback.stateBuffer.map(s => {
-                return {
-                    colors: s.actions.map(a => Graphics.colorFromText(a.context + a.ownerId.repeat(4))),
-                    values: s.actions.map(_ => 1)
-                };
-            }),
-            type: GraphType.bars,
-            labels: {
-                title: "Actions count and their context in frames buffer",
-                bottomCenter: { type: LabelType.middle },
-                topLeft: { type: LabelType.maxValue },
-                topRight: { type: LabelType.maxValue },
-                bottomLeft: { type: LabelType.start },
-                bottomRight: { type: LabelType.end }
-            },
-            crop: stateCrop
-        };
 
-        const stateBufferType = {
-            data: this.engine.rollback.stateBuffer.map(s => {
-                return {
-                    colors: [s.onlyActions ? "dodgerblue" : "orangered"],
-                    values: [s.onlyActions ? 1 : 2]
-                };
-            }),
-            minValue: 0,
-            maxValue: 2,
-            type: GraphType.bars,
-            labels: {
-                title: "Full snapshot vs actions only snapshot",
-                bottomCenter: { type: LabelType.middle },
-                bottomLeft: { type: LabelType.start },
-                bottomRight: { type: LabelType.end }
-            },
-            crop: stateCrop
-        };
+        const actionCountData = [];
+        
+        for (let i = stateCrop.start; i < stateCrop.end; i++) {
+            actionCountData.push({
+                colors: this.engine.rollback.stateBuffer[i].actions.map(a => Graphics.colorFromText(a.context + a.ownerId.repeat(4))),
+                values: this.engine.rollback.stateBuffer[i].actions.map(_ => 1)
+            });
+        }
 
-        const rollBackGraph = {
-            data: this.rollbackCountPerFrame,
-            type: GraphType.bars,
-            labels: {
-                title: "Number of time a frame has been rolled back",
-                bottomCenter: { type: LabelType.middle },
-                bottomLeft: { type: LabelType.start },
-                topLeft: { type: LabelType.maxValue },
-                topRight: { type: LabelType.maxValue },
-                bottomRight: { type: LabelType.end }
-            },
-            crop: rollbackCrop
-        };
+        const stateBufferData = [];
+        for (let i = stateCrop.start; i < stateCrop.end; i++) {
+            stateBufferData.push({
+                colors: [this.engine.rollback.stateBuffer[i].onlyActions ? "dodgerblue" : "orangered"],
+                values: [this.engine.rollback.stateBuffer[i].actions.length + 1]
+            });
+        }
 
-        const renderTimeGraph = {
-            data: this.renderTimeHistory,
-            type: GraphType.lines,
-            labels: {
-                title: "Render time history",
-                bottomCenter: { type: LabelType.middle },
-                topLeft: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
-                topRight: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
-                bottomRight: { type: LabelType.end },
-                xAxisZero: { type: LabelType.start },
-            },
-            crop: Graphics.cropEnd(this.renderTimeHistory.length, 60 * 5)
-        };
+        this.actionCountGraph.data = actionCountData;
 
-        const tickTimeGraph = {
-            data: this.tickTimeHistory,
-            type: GraphType.lines,
-            labels: {
-                title: "Tick time history",
-                bottomCenter: { type: LabelType.middle },
-                topLeft: { decimals: 2, type: LabelType.maxValue },
-                topRight: { decimals: 2, type: LabelType.maxValue },
-                bottomRight: { type: LabelType.end },
-                bottomLeft: { type: LabelType.start },
-            },
-            crop: Graphics.cropEnd(this.tickTimeHistory.length, 60 * 5)
-        };
+        this.stateBufferType.data = stateBufferData;
 
-        const lagOverTimeGraph = {
-            slidingAverage: 10,
-            data: this.lagHistory,
-            type: GraphType.lines,
-            maxValue: 20,
-            minValue: 0,
-            labels: {
-                title: "Lag over time",
-                bottomCenter: { type: LabelType.middle },
-                topLeft: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
-                topRight: { suffix: " ms", decimals: 0, type: LabelType.maxValue },
-                bottomRight: { type: LabelType.end },
-                xAxisZero: { type: LabelType.start },
-            },
-            crop: Graphics.cropEnd(this.lagHistory.length, 60 * 5)
-        };
+        this.rollBackGraph.data = this.rollbackCountPerFrame;
+        this.rollBackGraph.crop = rollbackCrop;
 
-        const tickCountGraph = {
-            slidingAverage: 10,
-            data: this.updateCountHistory,
-            type: GraphType.bars,
-            labels: {
-                title: "Tick count per frame",
-                bottomCenter: { type: LabelType.middle },
-                topLeft: { decimals: 0, type: LabelType.maxValue },
-                topRight: { decimals: 0, type: LabelType.maxValue },
-                bottomRight: { type: LabelType.end },
-                bottomLeft: { type: LabelType.start },
-            },
-            crop: Graphics.cropEnd(this.updateCountHistory.length, 60 * 5)
-        };
+        this.renderTimeGraph.data = this.renderTimeHistory;
+        this.renderTimeGraph.crop = Graphics.cropEnd(this.renderTimeHistory.length, 60 * 5);
+
+        this.tickTimeGraph.data = this.tickTimeHistory;
+        this.tickTimeGraph.crop = Graphics.cropEnd(this.tickTimeHistory.length, 60 * 5);
+        this.lagOverTimeGraph.data = this.lagHistory;
+        this.lagOverTimeGraph.crop = Graphics.cropEnd(this.lagHistory.length, 60 * 5);
+        this.tickCountGraph.data = this.updateCountHistory;
+        this.tickCountGraph.crop = Graphics.cropEnd(this.updateCountHistory.length, 60 * 5);
 
         switch (this.debugLevel) {
             case DebugMode.ALL_GRAPHS:
-                this.drawGraphGrid(0, 0, 1.5, 1, ctx, canvas, actionCountGraph);
-                this.drawGraphGrid(1, 0, 1.5, 1, ctx, canvas, rollBackGraph);
-                this.drawGraphGrid(2, 2, 3, 1, ctx, canvas, renderTimeGraph);
-                this.drawGraphGrid(3, 2, 3, 1, ctx, canvas, tickTimeGraph);
-                this.drawGraphGrid(2, 0, 1.5, 1, ctx, canvas, stateBufferType);
-                this.drawGraphGrid(1, 2, 3, 1, ctx, canvas, lagOverTimeGraph);
-                this.drawGraphGrid(0, 2, 3, 1, ctx, canvas, tickCountGraph);
+                this.drawGraphGrid(0, 0, 1.5, 1, ctx, canvas, this.actionCountGraph);
+                this.drawGraphGrid(1, 0, 1.5, 1, ctx, canvas, this.rollBackGraph);
+                this.drawGraphGrid(2, 2, 3, 1, ctx, canvas, this.renderTimeGraph);
+                this.drawGraphGrid(3, 2, 3, 1, ctx, canvas, this.tickTimeGraph);
+                this.drawGraphGrid(2, 0, 1.5, 1, ctx, canvas, this.stateBufferType);
+                this.drawGraphGrid(1, 2, 3, 1, ctx, canvas, this.lagOverTimeGraph);
+                this.drawGraphGrid(0, 2, 3, 1, ctx, canvas, this.tickCountGraph);
                 break;
             case DebugMode.ROLLBACK_SIMPLE:
-                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, actionCountGraph);
-                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, rollBackGraph);
+                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, this.actionCountGraph);
+                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, this.rollBackGraph);
                 break;
             case DebugMode.ROLLBACK:
-                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, actionCountGraph);
-                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, rollBackGraph);
-                this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, stateBufferType);
+                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, this.actionCountGraph);
+                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, this.rollBackGraph);
+                this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, this.stateBufferType);
                 break;
         }
     }
