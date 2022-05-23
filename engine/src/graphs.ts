@@ -197,7 +197,7 @@ export class Graphics {
                     if (typeof data === "number") {
                         const y = gy + this.valueToY(data, max, gh);
                         const height = this.valueToHeight(data, max, gh);
-                        ctx.fillRect(x, y, width - 2, height);
+                        ctx.fillRect(x, y, Math.max(1, width - 2), height);
                     } else {
                         let cumSum = 0;
                         for (let j = 0; j < data.values.length; j++) {
@@ -205,7 +205,7 @@ export class Graphics {
                             const y = gy + this.valueToY(cumSum, max, gh);
                             const height = this.valueToHeight(data.values[j], max, gh);
                             ctx.fillStyle = data.colors[j];
-                            ctx.fillRect(x, y, width - 2, height - 2);
+                            ctx.fillRect(x, y, Math.max(1, width - 2), height - 2);
                         }
                     }
                 }
@@ -301,7 +301,7 @@ export class Graphics {
         let min = Infinity;
         let max = -Infinity;
 
-        for (let i = start; i < Math.min(data.length, end); i++) {
+        for (let i = start; i < Math.min(data.length - 1, end); i++) {
             const barData = data[i];
             if (typeof barData === "number") {
                 if (barData < min) {
@@ -310,7 +310,7 @@ export class Graphics {
                 if (barData > max) {
                     max = barData;
                 }
-            } else {
+            } else if (barData !== undefined) {
                 const sum = barData.values.reduce((prev, val) => prev + val, 0);
                 if (sum < min) {
                     min = sum;
