@@ -52,6 +52,10 @@ export class MetaAPI implements Meta {
         return this.engine.currentState.frameIndex;
     }
 
+    get inRollback(): boolean {
+        return this.engine.network.ignoreEventBroadcast; // TODO: Have real in rollback property...
+    }
+
     // Could this be done better?
     get tick(): number {
         return this.engine.currentState.frameIndex;
