@@ -131,9 +131,4 @@ document.addEventListener("keydown", async (e) => {
             engine.rollbackFromFrame(engine.currentState.frameIndex - 120);
         });
     }
-    if (e.key === "0") {
-        engines.forEach((engine) => {
-            engine.rollbackFromFrame(0);
-        });
-    }
 });
