@@ -10,6 +10,7 @@ import { Rollback } from "rollback.js";
 import { EntitiesAPI } from "game-api/entities-api.js";
 import { Network, NetworkAction } from "network.js";
 import { MetaAPI } from "game-api/meta-api.js";
+import { AudioAPI } from "game-api/audio-api.js";
 
 export class Engine {
     readonly TARGET_UPS = 60;
@@ -29,6 +30,7 @@ export class Engine {
     actionsAPI: ActionsAPI;
     entitiesAPI: EntitiesAPI;
     metaAPI: MetaAPI;
+    audioAPI: AudioAPI;
 
     gameCanvas;
 
@@ -45,6 +47,7 @@ export class Engine {
         this.actionsAPI = new ActionsAPI(this.network, this.currentState);
         this.entitiesAPI = new EntitiesAPI();
         this.metaAPI = new MetaAPI(this);
+        this.audioAPI = new AudioAPI(this);
         this.reloadGameTemplate();
     }
 
@@ -173,7 +176,8 @@ export class Engine {
         return {
             actions: this.actionsAPI,
             entities: this.entitiesAPI,
-            meta: this.metaAPI
+            meta: this.metaAPI,
+            audio: this.audioAPI
         };
     }
 

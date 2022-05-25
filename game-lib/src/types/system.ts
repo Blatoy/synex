@@ -3,6 +3,7 @@ import { Component } from "./component.js";
 import { GenericEntity } from "./entity.js";
 import { Entities } from "./game-api/entities.js";
 import { Meta } from "./game-api/meta.js";
+import { Audio } from "./game-api/audio.js";
 
 /**
  * Defines game logic, should not contain state!
@@ -20,4 +21,5 @@ export type SystemContext = {
     actions: Actions
     entities: Entities
     meta: Meta
+    audio: Audio
 }
