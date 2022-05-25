@@ -17,6 +17,7 @@ import { Explode } from "magnet-bros/components/explode.js";
 import { Explosion } from "magnet-bros/components/explosion.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Color } from "game-lib/utils/color.js";
+import { BASE_IMAGE_PATH } from "magnet-bros/paths.js";
 
 export const SpawnerSystem: System = {
     requiredComponents: [[Owner, Transform], [Lifetime, Explode]],
@@ -78,7 +79,7 @@ export const SpawnerSystem: System = {
                     {
                         Type: Sprite,
                         valuesOverride: {
-                            sheetURL: "./magnet-bros/bomb.png",
+                            sheetURL: `${BASE_IMAGE_PATH}/bomb.png`,
                             name: "bomb",
                             width: 16,
                             height: 24

@@ -17,6 +17,7 @@ import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-fiel
 import { Animation } from "magnet-bros/components/animation.js";
 import { Sprite } from "magnet-bros/components/sprite.js";
 import { TrackedEntity } from "magnet-bros/components/tracked-entity.js";
+import { BASE_IMAGE_PATH } from "magnet-bros/paths.js";
 
 export const SpawnerSystem: System = {
     requiredComponents: [[Spawner, Transform], [Owner, RespawnTimer]],
@@ -50,7 +51,7 @@ export const SpawnerSystem: System = {
                             {
                                 Type: Sprite,
                                 valuesOverride: {
-                                    sheetURL: "./magnet-bros/player.png",
+                                    sheetURL: `${BASE_IMAGE_PATH}/player.png`,
                                     name: "magnet-player",
                                     width: 16,
                                     height: 32

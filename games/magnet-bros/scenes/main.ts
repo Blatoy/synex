@@ -4,6 +4,7 @@ import { Scene } from "game-lib/types/scene.js";
 import { BoxCollider } from "magnet-bros/components/box-collider.js";
 import { Spawner } from "magnet-bros/components/spawner.js";
 import { Sprite } from "magnet-bros/components/sprite.js";
+import { BASE_IMAGE_PATH } from "magnet-bros/paths.js";
 
 const main: Scene = {
     metadata: {
@@ -25,7 +26,7 @@ const glassBaseComponents = [
     {
         Type: Sprite,
         valuesOverride: {
-            sheetURL: "./magnet-bros/platform.png",
+            sheetURL: `${BASE_IMAGE_PATH}/platform.png`,
             name: "platform",
             width: 500,
             height: 200,
@@ -41,7 +42,7 @@ main.entities.push({
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/main-bg.png",
+                sheetURL: `${BASE_IMAGE_PATH}/main-bg.png`,
                 name: "background",
                 width: 1920,
                 height: 1080,
@@ -64,7 +65,7 @@ main.entities.push({
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/galaxy.png",
+                sheetURL: `${BASE_IMAGE_PATH}/galaxy.png`,
                 name: "galaxy",
                 width: 1920,
                 height: 1080,
@@ -88,11 +89,11 @@ main.entities.push({
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/sun.png",
+                sheetURL: `${BASE_IMAGE_PATH}/sun.png`,
                 name: "sun",
                 width: 1200,
                 height: 1050,
-                parallax:1,
+                parallax: 1,
             } as Sprite
         },
         {
@@ -142,7 +143,7 @@ main.entities.push({
         {
             Type: Sprite,
             valuesOverride: {
-                sheetURL: "./magnet-bros/main-platform.png",
+                sheetURL: `${BASE_IMAGE_PATH}/main-platform.png`,
                 name: "main-platform",
                 width: 500,
                 height: 109,
