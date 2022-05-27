@@ -40,6 +40,10 @@ export class ActionsAPI implements Actions {
         this.state.actionContext = context;
     }
 
+    getContext(): string {
+        return this.state.actionContext;
+    }
+
     broadcast(type: string, value?: unknown) {
         this.network.addManualAction(type, value);
     }
