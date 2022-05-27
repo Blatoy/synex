@@ -25,6 +25,7 @@ import { Lifetime } from "./components/lifetime.js";
 import { Explode } from "./components/explode.js";
 import { Explosion } from "./components/explosion.js";
 import { TrackedEntity } from "./components/tracked-entity.js";
+import { Camera } from "./components/camera.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -49,6 +50,7 @@ const components = {
     explosion: Explosion,
     radialField: RadialMagneticField,
     trackedEntity: TrackedEntity,
+    camera: Camera
 };
 
 const systemFiles = [

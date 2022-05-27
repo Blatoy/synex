@@ -28,6 +28,16 @@ export class Transform extends Component {
         return x > pos.x && x < pos.x + size.x && y > pos.y && y < pos.y + size.y;
     }
 
+    containsPointInWorld(x: number, y: number, translate: Vector2, scale: number) {
+        const pos = this.position;
+        const size = this.size;
+
+        x = (x - translate.x) / scale;
+        y = (y - translate.y) / scale;
+
+        return x > pos.x && x < pos.x + size.x && y > pos.y && y < pos.y + size.y;
+    }
+
     intersectsCircle(center: Vector2, radius: number) {
         // only check if the center is in the center
         return this.position.distanceTo(center) < radius;
