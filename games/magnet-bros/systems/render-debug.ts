@@ -17,8 +17,9 @@ export const DemoRender: System = {
 
             if (entity.debug.showName) {
                 ctx.textAlign = "center";
+                ctx.textBaseline = "top";
                 ctx.fillStyle = entity.debug.fillColor.toString();
-                ctx.fillText(entity.meta.name, pos.x + size.x / 2, pos.y - 10);
+                ctx.fillText(entity.meta.name, pos.x + size.x / 2, pos.y - 25);
             }
 
             if (entity.debug.strokeRect) {
@@ -27,6 +28,10 @@ export const DemoRender: System = {
                 ctx.strokeRect(pos.x, pos.y, size.x, size.y);
             }
 
+            if (this.meta.gameFocused && entity.owner && entity.owner.id === this.meta.localId) {
+                ctx.strokeStyle = "#37ACDA";
+                ctx.strokeRect(pos.x - 20, pos.y, size.x + 40, 2);
+            }
         }
 
         ctx.save();
