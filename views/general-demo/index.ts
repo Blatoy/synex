@@ -43,8 +43,8 @@ window.addEventListener("load", async () => {
     }, 100);
 
     window.synex.engines = engines;
-    engines[0].debugger.debugLevel = 3;
-    engines[1].debugger.debugLevel = 3;
+    engines[0].debugger.debugLevel = 1;
+    engines[1].debugger.debugLevel = 1;
 
     addDebugElements("debug-game-1", engines[0]);
     addDebugElements("debug-game-2", engines[1]);
@@ -112,12 +112,6 @@ function addDebugElements(targetName: string, engine: Engine) {
     (document.getElementById(targetName) as HTMLDivElement).appendChild(debug);
 }
 
-window.addEventListener("focus", async () => {
-    await gameTemplate.reload();
-    engines.forEach((engine) => {
-        engine.reloadGameTemplate();
-    });
-});
 
 document.addEventListener("keydown", async (e) => {
     if (e.key === "r") {
