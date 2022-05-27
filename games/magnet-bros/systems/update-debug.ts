@@ -2,13 +2,15 @@ import { Debug } from "game-lib/base-components/debug.js";
 import { Transform } from "game-lib/base-components/transform.js";
 import { System } from "game-lib/types/system.js";
 import { MousePosition } from "game-lib/utils/mouse.js";
+import { Camera } from "magnet-bros/components/camera.js";
 import { Entity } from "magnet-bros/metadata.js";
 
 
 export const UpdateDebug: System = {
-    requiredComponents: [Transform, Debug],
-    update(entities: Entity[]) {
+    requiredComponents: [[Transform, Debug], [Camera]],
+    update(entities: Entity[], cameras: Entity[]) {
         const playerActions = this.actions.ofLocalPlayer();
+        const camera = cameras[0].camera; // assume one camera
 
         if (playerActions["default:debug_select"]) {
             const mousePos = playerActions["default:debug_select"].data as MousePosition;
@@ -20,7 +22,7 @@ export const UpdateDebug: System = {
                 entity.debug.strokeRect = false;
                 entity.debug.showDetail = false;
 
-                if (!wasSelected && !anySelected && entity.transform.containsPoint(mousePos.x, mousePos.y)) {
+                if (!wasSelected && !anySelected && entity.transform.containsPointInWorld(mousePos.x, mousePos.y, camera.targetPosition, camera.targetZoom)) {
                     anySelected = true;
                     entity.debug.strokeRect = true;
                     entity.debug.showDetail = true;

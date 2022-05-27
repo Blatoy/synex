@@ -2,6 +2,7 @@ import { Debug } from "game-lib/base-components/debug.js";
 import { Transform } from "game-lib/base-components/transform.js";
 import { Scene } from "game-lib/types/scene.js";
 import { BoxCollider } from "magnet-bros/components/box-collider.js";
+import { Camera } from "magnet-bros/components/camera.js";
 import { Spawner } from "magnet-bros/components/spawner.js";
 import { Sprite } from "magnet-bros/components/sprite.js";
 import { BASE_IMAGE_PATH } from "magnet-bros/paths.js";
@@ -35,6 +36,15 @@ const glassBaseComponents = [
 ];
 
 
+
+main.entities.push({
+    metadata: { name: "Camera" },
+    components: [
+        {
+            Type: Camera
+        }
+    ]
+});
 
 main.entities.push({
     metadata: { name: "Background-2" },
