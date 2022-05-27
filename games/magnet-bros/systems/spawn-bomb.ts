@@ -17,13 +17,23 @@ import { Explode } from "magnet-bros/components/explode.js";
 import { Explosion } from "magnet-bros/components/explosion.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Color } from "game-lib/utils/color.js";
-import { BASE_IMAGE_PATH } from "magnet-bros/paths.js";
+import { BASE_AUDIO_PATH, BASE_IMAGE_PATH } from "magnet-bros/paths.js";
 
 export const SpawnerSystem: System = {
     requiredComponents: [[Owner, Transform], [Lifetime, Explode]],
     update(bombSpawners: Entity[], bombs: Entity[]) {
         for (const bomb of bombs) {
+            if (bomb.lifetime.timeLeft === 30 * 3) {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "tick-1.ogg");
+            }
+            if (bomb.lifetime.timeLeft === 30 * 2) {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "tick-2.ogg");
+            }
+            if (bomb.lifetime.timeLeft === 30 * 1) {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "tick-3.ogg");
+            }
             if (bomb.lifetime.timeLeft === 1) {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "boom.ogg");
                 this.entities.spawn("Explosion of " + bomb.meta.name,
                     {
                         Type: Transform,

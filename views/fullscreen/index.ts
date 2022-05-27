@@ -24,6 +24,11 @@ document.addEventListener("keydown", async (e) => {
         engine.rollbackFromFrame(0);
     }
 
+    if (e.key === "m") {
+        engine.audioAPI.enableAudio();
+        engine.audioAPI.muted = !engine.audioAPI.muted;
+    }
+
     if (e.key === "9") {
         console.log("Re-requesting state");
         

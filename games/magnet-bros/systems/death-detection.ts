@@ -7,6 +7,7 @@ import { Lifetime } from "magnet-bros/components/lifetime.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { RespawnTimer } from "magnet-bros/components/respawn-timer.js";
 import { Entity, gameDefinition } from "magnet-bros/metadata.js";
+import { BASE_AUDIO_PATH } from "magnet-bros/paths.js";
 
 const maxDist = 50;
 export const AccelerationSystem: System = {
@@ -19,6 +20,8 @@ export const AccelerationSystem: System = {
             entity.transform.position.x > 1920 + maxDist ||
             entity.transform.position.y < -maxDist * 2)) {
             entity.respawnTimer.enabled = true;
+
+            this.audio.playOnce(BASE_AUDIO_PATH + "/" + "death.wav");
 
             this.entities.spawn("Death area of " + entity.meta.name,
                 {

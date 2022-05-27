@@ -4,6 +4,7 @@ import { Magnetic } from "magnet-bros/components/magnetic.js";
 import { Movement } from "magnet-bros/components/movement.js";
 import { RadialMagneticField } from "magnet-bros/components/radial-magnetic-field.js";
 import { Entity } from "magnet-bros/metadata.js";
+import { BASE_AUDIO_PATH } from "magnet-bros/paths.js";
 
 export const PlayerMovementSystem: System = {
     requiredComponents: [Movement, Owner, RadialMagneticField, Magnetic],
@@ -21,6 +22,12 @@ export const PlayerMovementSystem: System = {
         if (playerActions["default:toggle_magnet"]) {
             entity.radialField.active = !entity.radialField.active;
             entity.magnetic.active = !entity.magnetic.active;
+
+            if (entity.magnetic.active) {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "magnet-on.wav");
+            } else {
+                this.audio.playOnce(BASE_AUDIO_PATH + "/" + "magnet-off.wav");
+            }
         }
     }
 };

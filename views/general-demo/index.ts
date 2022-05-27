@@ -131,4 +131,8 @@ document.addEventListener("keydown", async (e) => {
             engine.rollbackFromFrame(engine.currentState.frameIndex - 120);
         });
     }
+    if (e.key === "m") {
+        engines[0].audioAPI.enableAudio();
+        engines[0].audioAPI.muted = !engines[0].audioAPI.muted;
+    }
 });
