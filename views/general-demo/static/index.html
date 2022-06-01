@@ -19,6 +19,7 @@
             <option value="2">ALL_GRAPHS</option>
             <option value="3">ROLLBACK</option>
             <option value="4">ROLLBACK_SIMPLE</option>
+            <option value="5">PERFORMANCE</option>
         </select>
         <span class="local-adapter">
             <label>Jitter (ms):</label><input class="small-number jitter-input" type="number" value="0">
@@ -28,6 +29,11 @@
             Websocket Status:<span class="ws-adapter-status">disconnected</span>
         </span>
         <label>Disable predictions:</label><input type="checkbox" class="no-prediction">
+        <div style="margin-top: 4px;">
+            <label>Graph history size:</label><input class="small-number graph-frames" type="number" value="180">
+            <label>Graph presets:</label>
+            <input type="button" class="preset-details" value="10 seconds"> <input type="button" class="preset-default" value="Default">
+        </div>
     </template>
     <div id="games">
         <div id="game-1" class="game-container"></div>
@@ -36,6 +42,17 @@
     <div id="games-debug">
         <div id="debug-game-1" class="debug-container"></div>
         <div id="debug-game-2" class="debug-container"></div>
+    </div>
+    <hr>
+    <div style="text-align: center;">
+        <label>Target UPS: </label><input class="small-number" id="target-ups" type="number" value="16.6666666666">
+        <input type="button" value="Frame by frame" onclick="document.getElementById('target-ups').value = 1; document.getElementById('target-ups').dispatchEvent(new Event('input'));">
+        <input type="button" value="Slow motion" onclick="document.getElementById('target-ups').value = 20; document.getElementById('target-ups').dispatchEvent(new Event('input'));">
+        <input type="button" value="Default speed" onclick="document.getElementById('target-ups').value = 60; document.getElementById('target-ups').dispatchEvent(new Event('input'));">
+        <hr>
+        <input type="button" value="DEMO: Focus both games" onclick="synex.engines.forEach(e => {e.inputs._ignoreInputs = false; e.gameCanvas.canvas.classList.add('selected')});">
+        <input type="button" value="DEMO: Clock Drift" onclick="synex.engines[1].setTargetUPS(59);">
+        <input type="button" value="Live reload" id="live-reload">
     </div>
 </body>
 
