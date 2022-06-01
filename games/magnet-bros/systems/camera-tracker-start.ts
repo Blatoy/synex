@@ -4,7 +4,6 @@ import { Vector2 } from "game-lib/utils/vector2.js";
 import { Camera } from "magnet-bros/components/camera.js";
 import { TrackedEntity } from "magnet-bros/components/tracked-entity.js";
 import { Entity } from "magnet-bros/metadata.js";
-import { BASE_AUDIO_PATH } from "magnet-bros/paths.js";
 
 export const spriteCache: { [key: string]: HTMLImageElement } = {};
 
@@ -31,6 +30,13 @@ export const CameraTrackerStart: System = {
         // We don't want the camera to be rollback'ed
         // TODO: Once unsync components are supported, this won't be needed (?)
         if (this.meta.inRollback) {
+            return;
+        }
+
+        // Having state in system is BAD
+        // It makes engines share the same state! This is absolutely not wanted!
+        // As a hack for the demos, engine 2 never updates the camera... 
+        if (this.meta.instanceName === "Engine 2") {
             return;
         }
 
@@ -106,10 +112,10 @@ export const CameraTrackerStart: System = {
         if (!cameraTarget || !borders) {
             return;
         }
+
         ctx.save();
         canvasWidth = canvas.width;
         canvasHeight = canvas.height;
-
 
         ctx.translate(cameraTarget.x, cameraTarget.y);
         ctx.scale(zoomTarget, zoomTarget);
