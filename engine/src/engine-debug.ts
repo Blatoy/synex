@@ -9,7 +9,8 @@ export enum DebugMode {
     MINIMAL,
     ALL_GRAPHS,
     ROLLBACK,
-    ROLLBACK_SIMPLE
+    ROLLBACK_SIMPLE,
+    PERFORMANCE
 }
 
 export class EngineDebugger {
@@ -27,6 +28,8 @@ export class EngineDebugger {
     fps = 0;
     lastUps = 0;
     ups = 0;
+
+    graphFrameCount = 60 * 3;
 
     currentRollbackFrame = 0;
     inRollback = false;
@@ -371,8 +374,8 @@ export class EngineDebugger {
             return;
         }
 
-        let stateCrop = Graphics.cropEnd(this.engine.rollback.stateBuffer.length, 60 * 3);
-        let rollbackCrop = Graphics.cropEnd(this.rollbackCountPerFrame.length, 60 * 3);
+        let stateCrop = Graphics.cropEnd(this.engine.rollback.stateBuffer.length, this.graphFrameCount);
+        let rollbackCrop = Graphics.cropEnd(this.rollbackCountPerFrame.length, this.graphFrameCount);
 
         if (this.overrideRenderedState) {
             stateCrop = {
@@ -390,8 +393,9 @@ export class EngineDebugger {
         
         for (let i = stateCrop.start; i < stateCrop.end; i++) {
             actionCountData.push({
-                colors: this.engine.rollback.stateBuffer[i].actions.map(a => Graphics.colorFromText(a.context + a.ownerId.repeat(4))),
-                values: this.engine.rollback.stateBuffer[i].actions.map(_ => 1)
+                colors: this.engine.rollback.stateBuffer[i].actions.map(a => Graphics.colorFromText(a.context + a.ownerId.repeat(6))),
+                values: this.engine.rollback.stateBuffer[i].actions.map(_ => 1),
+                labels: this.engine.rollback.stateBuffer[i].actions.map(a => a.type)
             });
         }
 
@@ -399,7 +403,8 @@ export class EngineDebugger {
         for (let i = stateCrop.start; i < stateCrop.end; i++) {
             stateBufferData.push({
                 colors: [this.engine.rollback.stateBuffer[i].onlyActions ? "dodgerblue" : "orangered"],
-                values: [this.engine.rollback.stateBuffer[i].actions.length + 1]
+                values: [this.engine.rollback.stateBuffer[i].onlyActions ? 1 : 2],
+                labels: [(this.engine.rollback.stateBuffer[i].onlyActions ? "" : "Snapshot ") + "#" + this.engine.rollback.stateBuffer[i].frameIndex]
             });
         }
 
@@ -411,14 +416,14 @@ export class EngineDebugger {
         this.rollBackGraph.crop = rollbackCrop;
 
         this.renderTimeGraph.data = this.renderTimeHistory;
-        this.renderTimeGraph.crop = Graphics.cropEnd(this.renderTimeHistory.length, 60 * 5);
+        this.renderTimeGraph.crop = Graphics.cropEnd(this.renderTimeHistory.length, this.graphFrameCount);
 
         this.tickTimeGraph.data = this.tickTimeHistory;
-        this.tickTimeGraph.crop = Graphics.cropEnd(this.tickTimeHistory.length, 60 * 5);
+        this.tickTimeGraph.crop = Graphics.cropEnd(this.tickTimeHistory.length, this.graphFrameCount);
         this.lagOverTimeGraph.data = this.lagHistory;
-        this.lagOverTimeGraph.crop = Graphics.cropEnd(this.lagHistory.length, 60 * 5);
+        this.lagOverTimeGraph.crop = Graphics.cropEnd(this.lagHistory.length, this.graphFrameCount);
         this.tickCountGraph.data = this.updateCountHistory;
-        this.tickCountGraph.crop = Graphics.cropEnd(this.updateCountHistory.length, 60 * 5);
+        this.tickCountGraph.crop = Graphics.cropEnd(this.updateCountHistory.length, this.graphFrameCount);
 
         switch (this.debugLevel) {
             case DebugMode.ALL_GRAPHS:
@@ -438,6 +443,12 @@ export class EngineDebugger {
                 this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, this.actionCountGraph);
                 this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, this.rollBackGraph);
                 this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, this.stateBufferType);
+                break;
+            case DebugMode.PERFORMANCE:
+                this.drawGraphGrid(0, 0, 1, 1, ctx, canvas, this.renderTimeGraph);
+                this.drawGraphGrid(1, 0, 1, 1, ctx, canvas, this.tickTimeGraph);
+                this.drawGraphGrid(2, 0, 1, 1, ctx, canvas, this.lagOverTimeGraph);
+                this.drawGraphGrid(3, 0, 1, 1, ctx, canvas, this.tickCountGraph);
                 break;
         }
     }

@@ -13,9 +13,9 @@ import { MetaAPI } from "game-api/meta-api.js";
 import { AudioAPI } from "game-api/audio-api.js";
 
 export class Engine {
-    readonly TARGET_UPS = 60;
-    readonly MS_PER_FRAME = 1000 / this.TARGET_UPS;
-    readonly MAX_CATCHUP_FRAMES = 100;
+    targetUPS = 60;
+    private msPerFrame = 1000 / this.targetUPS;
+    readonly MAX_CATCHUP_FRAMES = 1000;
 
     currentState: State = new State(this.gameTemplate);
     systems: System[] = [];
@@ -49,6 +49,11 @@ export class Engine {
         this.metaAPI = new MetaAPI(this);
         this.audioAPI = new AudioAPI(this);
         this.reloadGameTemplate();
+    }
+
+    public setTargetUPS(target: number) {
+        this.targetUPS = target;
+        this.msPerFrame = 1000 / target;
     }
 
     /**
@@ -191,6 +196,7 @@ export class Engine {
             if (frameIndex < this.currentState.frameIndex) {
                 for (const playerId in action[1]) {
                     if (this.rollback.updateStateBuffer(frameIndex, playerId, action[1][playerId])) {
+                        // this.metaAPI.log("Received inputs ", action[1][playerId].map(a => a.type), "at frame", frameIndex, "which did not match prediction");
                         if (frameIndex < earliestFrame) {
                             earliestFrame = frameIndex;
                         }
@@ -204,6 +210,7 @@ export class Engine {
         if (earliestFrame !== Infinity) {
             // TODO: Game dev must double check that events are valid
             this.debugger.onRollbackStart();
+            // this.metaAPI.log("Rollback from frame", earliestFrame, "to fix the mis prediction(s)");
             this.rollbackFromFrame(earliestFrame);
             this.debugger.onRollbackEnd();
         }
@@ -319,7 +326,7 @@ export class Engine {
 
         // Simulate as many frames as needed, but not more than max catchup frames
         // TODO: Limit number of frames to a specific amount of ms instead of number
-        while (this.updateLag >= this.MS_PER_FRAME && updateCount < this.MAX_CATCHUP_FRAMES && !this.debugger.pauseLoop) {
+        while (this.updateLag >= this.msPerFrame && updateCount < this.MAX_CATCHUP_FRAMES && !this.debugger.pauseLoop) {
             updateCount++;
 
             this.currentState.clearActions();
@@ -328,7 +335,7 @@ export class Engine {
             this.rollback.saveNewStateToBuffer(this.currentState);
 
             this.tick(this.currentState);
-            this.updateLag -= this.MS_PER_FRAME;
+            this.updateLag -= this.msPerFrame;
 
             this.inputs.onFrameEnd();
         }
