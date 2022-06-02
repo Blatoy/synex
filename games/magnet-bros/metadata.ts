@@ -121,4 +121,7 @@ export const gameDefinition: GameMetadata = {
 };
 
 // Allows accessing components and getting autocompletion in systems
-export type Entity = GenericEntity & { [K in keyof typeof components]: InstanceType<typeof components[K]> };
+export type Entity = GenericEntity & { 
+    [K in keyof typeof components]: InstanceType<typeof components[K]> 
+};
+

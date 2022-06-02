@@ -1,6 +1,9 @@
 import { SerializedComponent } from "types/component.js";
 
 export class ComponentManager {
+    /**
+     * @returns Deserialized component. Should not be used by games (?)
+     */
     public static deserialize(data: SerializedComponent) {
         const component = new data.Type();
 
