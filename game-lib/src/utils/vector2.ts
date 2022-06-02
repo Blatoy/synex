@@ -6,6 +6,7 @@ export class Vector2 {
         this.x = x;
         this.y = y;
     }
+
     magnitude() {
         return this.x * this.x + this.y * this.y;
     }
@@ -22,6 +23,9 @@ export class Vector2 {
         return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
     }
 
+    /**
+     * @returns Vector pointing from this vector to specified
+     */
     directionTo(other: Vector2) {
         return new Vector2(
             other.x - this.x,
@@ -29,7 +33,9 @@ export class Vector2 {
         );
     }
 
-    // TODO: Vector should be immutable
+    /**
+     * @returns Vector pointing to this vector from specified
+     */
     directionFrom(other: Vector2) {
         return new Vector2(
             this.x - other.x,
@@ -37,6 +43,9 @@ export class Vector2 {
         );
     }
 
+    /**
+     * Convert vector to unit vector
+     */
     makeUnit() {
         const magnitude = this.magnitude();
         this.x /= magnitude;
@@ -48,21 +57,40 @@ export class Vector2 {
         this.y += other.y;
     }
 
+    /**
+     * Ensure vector values are not bigger than given vector
+     */
     capMax(maxValues: Vector2) {
         this.x = Math.min(this.x, maxValues.x);
         this.y = Math.min(this.y, maxValues.y);
     }
 
+    /**
+     * Ensure vector values are not smaller than given vector
+     */
     capMin(minValues: Vector2) {
         this.x = Math.max(this.x, minValues.x);
         this.y = Math.max(this.y, minValues.y);
     }
 
+    /**
+     * Multiple vector by n
+     */
     scale(n: number) {
         this.x *= n;
         this.y *= n;
     }
 
+    /**
+     * Return new vector of this scaled by n
+     */
+    scaleNew(n: number) {
+        return new Vector2(this.x * n, this.y * n);
+    }
+
+    /**
+     * Multiple vector element wise
+     */
     mulElementWise(other: Vector2) {
         this.x *= other.x;
         this.y *= other.y;
