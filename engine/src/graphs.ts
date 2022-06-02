@@ -102,7 +102,8 @@ export type DataCrop = {
 
 export type StackBarData = {
     values: number[],
-    colors: string[]
+    colors: string[],
+    labels?: string[]
 }
 
 export class Graphics {
@@ -200,12 +201,19 @@ export class Graphics {
                         ctx.fillRect(x, y, Math.max(1, width - 2), height);
                     } else {
                         let cumSum = 0;
+
+                        ctx.textAlign = "left";
+                        ctx.textBaseline = "top";
                         for (let j = 0; j < data.values.length; j++) {
                             cumSum += data.values[j];
                             const y = gy + this.valueToY(cumSum, max, gh);
                             const height = this.valueToHeight(data.values[j], max, gh);
                             ctx.fillStyle = data.colors[j];
                             ctx.fillRect(x, y, Math.max(1, width - 2), height - 2);
+                            if (count <= 20 && data.labels) {
+                                ctx.fillStyle = this.contrastColor(ctx.fillStyle);
+                                ctx.fillText(data.labels[j], x + 1, y + 1);
+                            }
                         }
                     }
                 }
@@ -301,7 +309,7 @@ export class Graphics {
         let min = Infinity;
         let max = -Infinity;
 
-        for (let i = start; i < Math.min(data.length - 1, end); i++) {
+        for (let i = start; i < Math.min(data.length, end); i++) {
             const barData = data[i];
             if (typeof barData === "number") {
                 if (barData < min) {
@@ -371,6 +379,32 @@ export class Graphics {
         }
         return color;
     }
+
+    /**
+     * Based on https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+     */
+    static contrastColor(hex: string) {
+        const c = this.hexToRgb(hex);
+
+        if (c.r * 0.299 + c.g * 0.587 + c.b * 0.114 > 149) {
+            return "black";
+        } else {
+            return "white";
+        }
+    }
+
+    /**
+     * Based on https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+     */
+    static hexToRgb(hex: string) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
 
     static cropEnd(totalElementCount: number, displayedCount: number, selectedIndex = -1) {
         if (selectedIndex === -1) {

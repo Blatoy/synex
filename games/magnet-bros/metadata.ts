@@ -25,6 +25,7 @@ import { Lifetime } from "./components/lifetime.js";
 import { Explode } from "./components/explode.js";
 import { Explosion } from "./components/explosion.js";
 import { TrackedEntity } from "./components/tracked-entity.js";
+import { Camera } from "./components/camera.js";
 
 const importSystems = SystemManager.createImporter(import.meta.url);
 
@@ -49,10 +50,12 @@ const components = {
     explosion: Explosion,
     radialField: RadialMagneticField,
     trackedEntity: TrackedEntity,
+    camera: Camera
 };
 
 const systemFiles = [
     "update-debug",
+    "music",
     "respawn",
     "death-detection",
     "spawner",
@@ -67,6 +70,7 @@ const systemFiles = [
     "spawn-bomb",
     "update-animations",
     "lifetime",
+    "credits",
     "player-despawner",
     "camera-tracker-start",
     "render-sprites",
@@ -74,6 +78,7 @@ const systemFiles = [
     "render-debug-magnets",
     "render-debug",
     "camera-tracker-end",
+    "credits-render",
 ];
 
 export const gameDefinition: GameMetadata = {
@@ -99,6 +104,7 @@ export const gameDefinition: GameMetadata = {
                 keys: [Key.Comma],
                 synchronized: false
             },
+            "open_menu": { keys: [Key.Escape], fireOnce: true, synchronized: false },
             "jump": { keys: [Key.W, Key.ArrowUp, Key.Space] },
             "move_down": { keys: [Key.S, Key.ArrowDown] },
             "drop_down": { keys: [Key.Space] },
@@ -106,10 +112,16 @@ export const gameDefinition: GameMetadata = {
             "move_right": { keys: [Key.D, Key.ArrowRight] },
             "spawn_item": { keys: [Key.Q, Key.ControlLeft, Key.F, Key.E], fireOnce: true },
             "toggle_magnet": { keys: [Key.ShiftLeft], fireOnce: true }
+        },
+        "menu": {
+            "close": { keys: [Key.Escape], fireOnce: true, synchronized: false }
         }
     },
     version: "1.0.0"
 };
 
 // Allows accessing components and getting autocompletion in systems
-export type Entity = GenericEntity & { [K in keyof typeof components]: InstanceType<typeof components[K]> };
+export type Entity = GenericEntity & { 
+    [K in keyof typeof components]: InstanceType<typeof components[K]> 
+};
+

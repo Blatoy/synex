@@ -56,6 +56,14 @@ export class MetaAPI implements Meta {
         return this.engine.network.ignoreEventBroadcast; // TODO: Have real in rollback property...
     }
 
+    get gameFocused(): boolean {
+        return !this.engine.inputs.ignoreInputs;
+    }
+
+    get localId(): string {
+        return this.engine.network.localId;
+    }
+
     // Could this be done better?
     get tick(): number {
         return this.engine.currentState.frameIndex;

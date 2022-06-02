@@ -43,11 +43,24 @@ window.addEventListener("load", async () => {
     }, 100);
 
     window.synex.engines = engines;
-    engines[0].debugger.debugLevel = 3;
-    engines[1].debugger.debugLevel = 3;
+    engines[0].debugger.debugLevel = 1;
+    engines[1].debugger.debugLevel = 1;
 
     addDebugElements("debug-game-1", engines[0]);
     addDebugElements("debug-game-2", engines[1]);
+
+    const disablePrediction = document.querySelector("#target-ups") as HTMLInputElement;
+    disablePrediction.value = engines[0].targetUPS.toString();
+    disablePrediction.addEventListener("input", () => {
+        for (const engine of engines) {
+            engine.setTargetUPS(parseFloat(disablePrediction.value));
+        }
+    });
+    
+    const liveReloadButton = document.querySelector("#live-reload") as HTMLInputElement;
+    liveReloadButton.addEventListener("click", () => {
+        liveReload();
+    });
 });
 
 function addDebugElements(targetName: string, engine: Engine) {
@@ -56,13 +69,33 @@ function addDebugElements(targetName: string, engine: Engine) {
 
     const debugLevelSelect = debug.querySelector(".select-label") as HTMLSelectElement;
     const disablePrediction = debug.querySelector(".no-prediction") as HTMLInputElement;
+    const presetDetails = debug.querySelector(".preset-details") as HTMLInputElement;
+    const presetDefault = debug.querySelector(".preset-default") as HTMLInputElement;
 
     const localAdapter = debug.querySelector(".local-adapter") as HTMLElement;
     const jitterInput = debug.querySelector(".jitter-input") as HTMLInputElement;
     const lagInput = debug.querySelector(".lag-input") as HTMLInputElement;
+    const graphFrames = debug.querySelector(".graph-frames") as HTMLInputElement;
 
     const wsAdapter = debug.querySelector(".ws-adapter") as HTMLElement;
     const wsAdapterStatus = debug.querySelector(".ws-adapter-status") as HTMLInputElement;
+
+    graphFrames.addEventListener("input", () => {
+        engine.debugger.graphFrameCount = parseInt(graphFrames.value);
+    });
+
+    presetDetails.addEventListener("click", () => {
+        graphFrames.value = "10";
+        debugLevelSelect.selectedIndex = 4;
+        debugLevelSelect.dispatchEvent(new Event("change"));
+        graphFrames.dispatchEvent(new Event("input"));
+    });
+    presetDefault.addEventListener("click", () => {
+        graphFrames.value = "180";
+        debugLevelSelect.selectedIndex = 1;
+        debugLevelSelect.dispatchEvent(new Event("change"));
+        graphFrames.dispatchEvent(new Event("input"));
+    });
 
     if (engine.network.adapter instanceof LocalAdapter) {
         wsAdapter.classList.add("hidden");
@@ -112,23 +145,24 @@ function addDebugElements(targetName: string, engine: Engine) {
     (document.getElementById(targetName) as HTMLDivElement).appendChild(debug);
 }
 
-window.addEventListener("focus", async () => {
+async function liveReload() {
     await gameTemplate.reload();
     engines.forEach((engine) => {
         engine.reloadGameTemplate();
     });
-});
+}
 
 document.addEventListener("keydown", async (e) => {
     if (e.key === "r") {
-        await gameTemplate.reload();
-        engines.forEach((engine) => {
-            engine.reloadGameTemplate();
-        });
+        liveReload();
     }
     if (e.key === "t") {
         engines.forEach((engine) => {
             engine.rollbackFromFrame(engine.currentState.frameIndex - 120);
         });
+    }
+    if (e.key === "m") {
+        engines[0].audioAPI.enableAudio();
+        engines[0].audioAPI.muted = !engines[0].audioAPI.muted;
     }
 });

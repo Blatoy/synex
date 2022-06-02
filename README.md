@@ -1,23 +1,44 @@
-# Deterministic Multiplayer Game Engine using ECS and Predictive Rollback with Visualisation Tools
+# Synex
 
-## About
+## About 
+
+Deterministic Multiplayer Game Engine using ECS and Predictive Rollback with Visualisation Tools
 
 Made for the PA project at HES-SO. 2022
 
-## Setup
+Sync + ECS = Synex
 
-`npm install`
+## Installation
 
+- Ensure you have a recent version of NodeJS installed. Tested on `v16.9.1`
+- Run `npm install`
 
 ## Running
 
-Build in watch mode and run with `npm start`. Everything required should be hosted on localhost:8080
-
+- `npm start` will build the project (in watch mode, so you can live reload)
+- The project will be served on http://localhost:43223/views
+- `fullscreen` contains one fullscreen instance of the game, `general-demo` contains two instances of the game and debug tools
 
 ## Deployment notes
 
-If the `dist` folder is not hosted as the root path, adapt the src of scripts in the `index.html` of the view you are deploying.
+- The `dist` folder can be statically hosted on a web server
+- If the `dist` folder is not hosted in the root path of the web server, adapt the src of scripts in the `index.html` of the view you are deploying
 
+## Making a game
+
+- In `games` create a folder for your game
+- Define components which are the data of your game (Transform, Sprite, etc.)
+- Define systems which define how the data is updated
+- Create a `metadata.ts` which load your components and systems and defines player inputs.
+- Update the engine instantiation `index.ts` in the view you want to use with the name of your game
+- Check how `magnet-bros` works to know what to put in your files
+- Good luck!
+
+## Running the game in real multiplayer
+
+- Run `npm install` in ws-server
+- Run `npx ts-node main.ts` to run the server
+- By default, a local network adapter is used by the engine. In `network.ts` replace `LocalAdapter` by `WSAdapter`
 
 ## Dev notes
 
