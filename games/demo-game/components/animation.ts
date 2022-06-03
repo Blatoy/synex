@@ -2,7 +2,7 @@ import { Component } from "game-lib/types/component.js";
 
 export class Animation extends Component {
     // Animation config could be static
-    spriteSheet = "./demo-game/player.png";
+    spriteSheet = "../../assets/demo-game/images/player.png";
     spriteName = "player";
     spriteWidth = 16;
     spriteHeight = 32;
