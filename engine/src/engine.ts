@@ -45,7 +45,7 @@ export class Engine {
         this.network = new Network(this);
         this.rollback = new Rollback(this);
         this.actionsAPI = new ActionsAPI(this.network, this.currentState);
-        this.entitiesAPI = new EntitiesAPI();
+        this.entitiesAPI = new EntitiesAPI(this.currentState);
         this.metaAPI = new MetaAPI(this);
         this.audioAPI = new AudioAPI(this);
         this.reloadGameTemplate();
@@ -178,6 +178,8 @@ export class Engine {
 
     getAPIForState(state: State): SystemContext {
         this.actionsAPI.state = state;
+        this.entitiesAPI.state = state;
+
         return {
             actions: this.actionsAPI,
             entities: this.entitiesAPI,
