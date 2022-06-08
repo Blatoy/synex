@@ -1,8 +1,9 @@
 import { ComponentManager } from "game-lib/utils/component-manager.js";
 import { GenericEntity } from "game-lib/types/entity.js";
 import { GameMetadata } from "game-lib/types/game-metadata.js";
-import { Scene } from "game-lib/types/scene.js";
+import { EntityDefinition, Scene } from "game-lib/types/scene.js";
 import { MetaEntity } from "meta-entity.js";
+import { SerializedComponent } from "game-lib/types/component.js";
 
 export class GameTemplate {
     gameMetadata!: GameMetadata;
@@ -44,21 +45,29 @@ export class GameTemplate {
         const entities: GenericEntity[] = [];
 
         for (const entityDefinition of scene.entities) {
-            // TODO: Add a function to do entity creation, as this is also used in entities-api
-            const entity: GenericEntity = {
-                meta: new MetaEntity(
-                    entityDefinition.metadata.name,
-                    entityDefinition.components.map(serializedComponent => serializedComponent.Type)
-                )
-            };
-
-            entityDefinition.components.forEach((component) => {
-                entity[component.Type.componentName] = ComponentManager.deserialize(component);
-            });
-
-            entities.push(entity);
+            entities.push(GameTemplate.entityFromDefinition(entityDefinition));
         }
 
         return entities;
+    }
+
+    public static entityFromDefinition(serialized: EntityDefinition) {
+        const entity = {} as GenericEntity;
+        entity.meta = new MetaEntity(
+            serialized.metadata.name,
+            serialized.components.map(serializedComponent => serializedComponent.Type),
+            entity
+        );
+
+        serialized.components.forEach((component) => {
+            GameTemplate.addSerializedComponent(entity, component);
+        });
+
+        return entity;
+    }
+
+    public static addSerializedComponent(entity: GenericEntity, component: SerializedComponent) {
+        entity[component.Type.componentName] = ComponentManager.deserialize(component);
+        entity.meta.components.push(component.Type);
     }
 }
