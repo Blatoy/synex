@@ -4,7 +4,7 @@ import { Vector2 } from "game-lib/utils/vector2.js";
 export class Camera extends Component {
     extraDistanceFactor = 1.2;
     extraDistance = 100;
-    maxZoom = 2.5;
+    maxZoom = 1.5;
     maxDezoom = 1;
 
     zoomInSpeed = 0.001;

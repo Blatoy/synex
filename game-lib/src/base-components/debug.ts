@@ -6,9 +6,9 @@ import { Color } from "../utils/color.js";
  * Check magnet-demo to see what can be done with this
  */
 export class Debug extends Component {
-    fillColor = new Color(255, 0, 0, 0.5);
+    fillColor = new Color(255, 255, 0, 0.5);
     fillRect = false;
-    strokeColor = new Color(255, 0, 0, 1);
+    strokeColor = new Color(255, 255, 0, 1);
     strokeRect = false;
 
     detailScroll = 0;
