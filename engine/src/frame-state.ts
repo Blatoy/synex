@@ -58,12 +58,12 @@ export class State {
 
         for (const savedEntity of savedEntities) {
             // Create entity
-            const entity: GenericEntity = {
-                meta: new MetaEntity(
-                    savedEntity.meta.name,
-                    savedEntity.meta.components.map(name => gameTemplate.gameMetadata.components[name])
-                )
-            };
+            const entity = {} as GenericEntity;
+            entity.meta = new MetaEntity(
+                savedEntity.meta.name,
+                savedEntity.meta.components.map(name => gameTemplate.gameMetadata.components[name]),
+                entity
+            );
 
             // For each components of the entity, set back their value
             for (const componentClass of entity.meta.components) {

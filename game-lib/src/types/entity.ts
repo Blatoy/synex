@@ -1,4 +1,4 @@
-import { Component } from "./component.js";
+import { Component, SerializedComponent } from "./component.js";
 
 /**
  * Represent entities that are passed to systems
@@ -25,6 +25,10 @@ export type MetaEntity = {
      * Return true if the entity has all of the specified components
      */
     hasComponents: (components: typeof Component[]) => boolean
+    /**
+     * Add a component on the next frame
+     */
+    addComponent: (...components: SerializedComponent[]) => void
 }
 
 /**
