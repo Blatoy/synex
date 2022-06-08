@@ -1,8 +1,9 @@
+import { Owner } from "game-lib/base-components/owner.js";
 import { Transform } from "game-lib/base-components/transform.js";
 import { System } from "game-lib/types/system.js";
 
 export const CreditsSystem: System = {
-    requiredComponents: [Transform],
+    requiredComponents: [Owner],
     render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         if (this.actions.getContext() === "menu") {
             ctx.save();
