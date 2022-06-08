@@ -63,7 +63,7 @@ export const DemoRender: System = {
 
                     // System handling this entity
                     let systems = this.meta.systemsHandlingEntity(entity.meta);
-                    systems = systems.filter((name) => !name.includes("update-debug") && !name.includes("render-debug"));
+                    systems = systems.filter((name) => !name.includes("update-debug") && !name.includes("render-debug") && !name.includes("demo"));
                     for (let i = 0; i < systems.length; i += 4) {
                         if (i === 0) {
                             ctx.fillText("Handled by: ", 15, y += 30);
