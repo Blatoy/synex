@@ -10,12 +10,12 @@ export const MovementAnimationSystem: System = {
     requiredComponents: [Owner, Velocity, Animation, RigidBody, Sprite],
     updateAll(entity: Entity) {
         const absHorizontal = Math.abs(entity.velocity.linear.x);
-
+asdsad
         if (entity.velocity.linear.x > 0.5) {
             entity.sprite.mirrorX = false;
         } else if (entity.velocity.linear.x < -0.5) {
             entity.sprite.mirrorX = true;
-        }
+        }dsadasd
 
         // in air
         if (!entity.rigidBody.grounded) {
