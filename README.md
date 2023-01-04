@@ -2,9 +2,13 @@
 
 ## About 
 
-Deterministic Multiplayer Game Engine using ECS and Predictive Rollback with Visualisation Tools
+Deterministic Multiplayer Game Engine using ECS and Predictive Rollback with Visualisation Tools.
 
-Made for the PA project at HES-SO. 2022
+![Screenshot of Synex](https://orikaru.net/dl/synex-demo.png)
+
+> A screenshot of one of the game made, with many debug UI enabled.
+
+This project was made for the "Projet d'Approfondissement" at HES-SO in 2022. While it works well enough for simple games (even in multiplayer, under some conditions), the main goal of this project was always to showcase ECS and predictive rollback, rather than making a good game engine.
 
 Sync + ECS = Synex
 
